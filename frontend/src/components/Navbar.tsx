@@ -1,0 +1,122 @@
+import { Link, useNavigate } from 'react-router-dom'
+import { Zap, LayoutDashboard, PlusCircle, LogOut, Menu, X, BarChart3 } from 'lucide-react'
+import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+
+export default function Navbar() {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+    setMenuOpen(false)
+  }
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-md">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-900/40 group-hover:shadow-violet-900/60 transition-shadow">
+              <Zap size={16} className="text-white" />
+            </div>
+            <span className="font-bold text-lg text-white tracking-tight">
+              Pulse<span className="text-violet-400">Vote</span>
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-2">
+            {user ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+                >
+                  <LayoutDashboard size={15} />
+                  Dashboard
+                </Link>
+                <Link
+                  to="/my-polls"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+                >
+                  <BarChart3 size={15} />
+                  My Polls
+                </Link>
+                <Link
+                  to="/polls/create"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm bg-violet-600 hover:bg-violet-500 text-white transition-all font-medium"
+                >
+                  <PlusCircle size={15} />
+                  Create Poll
+                </Link>
+                <div className="h-6 w-px bg-slate-800 mx-1" />
+                <span className="text-sm text-slate-400">Hi, {user.name.split(' ')[0]}</span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                >
+                  <LogOut size={15} />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors">
+                  Login
+                </Link>
+                <Link to="/register" className="btn-primary !py-2 !px-5 !text-sm">
+                  Get Started
+                </Link>
+              </>
+            )}
+          </nav>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+          >
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="md:hidden border-t border-slate-800 py-4 space-y-1 animate-fade-in">
+            {user ? (
+              <>
+                <Link to="/dashboard" onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
+                  <LayoutDashboard size={16} /> Dashboard
+                </Link>
+                <Link to="/polls/create" onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all">
+                  <PlusCircle size={16} /> Create Poll
+                </Link>
+                <button onClick={handleLogout}
+                  className="flex w-full items-center gap-2 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all">
+                  <LogOut size={16} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
+                  Login
+                </Link>
+                <Link to="/register" onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all">
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </header>
+  )
+}
