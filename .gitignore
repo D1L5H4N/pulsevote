@@ -9,13 +9,12 @@ frontend/node_modules/
 frontend/dist/
 frontend/.pnpm-store/
 
-# Go
+# Go binaries only (NOT go.sum — that must be committed)
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-go.sum
 
 # Misc
 .DS_Store
