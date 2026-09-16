@@ -4,9 +4,13 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell
 } from 'recharts'
-import { BarChart3, Users, ExternalLink, Wifi, WifiOff } from 'lucide-react'
+import {
+  BarChart3, Users, ExternalLink, Wifi, WifiOff,
+  Share2, QrCode, CheckCircle
+} from 'lucide-react'
 import { voteApi, ResultsResponse } from '../services/api'
 import { useWebSocket } from '../hooks/useWebSocket'
+import QRCodeModal from '../components/QRCodeModal'
 
 // Colour palette for chart bars — cycles through if > 6 options
 const BAR_COLORS = ['#7c3aed', '#a855f7', '#8b5cf6', '#6d28d9', '#9333ea', '#c026d3']
@@ -17,10 +21,13 @@ function formatPct(n: number) {
 
 export default function ResultsPage() {
   const { id } = useParams<{ id: string }>()
-  const [results, setResults]     = useState<ResultsResponse | null>(null)
-  const [loading, setLoading]     = useState(true)
-  const [wsConnected, setWsConnected] = useState(false)
-  const [lastUpdate, setLastUpdate]   = useState<Date | null>(null)
+  const [results, setResults]       = useState<ResultsResponse | null>(null)
+  const [loading, setLoading]       = useState(true)
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+  const [showQR, setShowQR]         = useState(false)
+  const [copied, setCopied]         = useState(false)
+
+  const pollUrl = `${window.location.origin}/poll/${id}`
 
   // Load initial results from REST API on mount
   useEffect(() => {
@@ -35,14 +42,24 @@ export default function ResultsPage() {
   const handleMessage = useCallback((data: ResultsResponse) => {
     setResults(data)
     setLastUpdate(new Date())
-    setWsConnected(true)
   }, [])
 
-  useWebSocket({
+  const { isConnected } = useWebSocket({
     pollId: id!,
     onMessage: handleMessage,
     enabled: !!id,
   })
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(pollUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      // Fallback if clipboard API is restricted
+      prompt('Copy this voting link:', pollUrl)
+    }
+  }
 
   if (loading) {
     return (
@@ -80,33 +97,68 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-3 mb-3">
             {isClosed ? (
               <span className={results.status === 'expired' ? 'badge-expired' : 'badge-closed'}>
                 {results.status}
               </span>
             ) : (
               <span className="badge-active">
-                <span className="live-dot" /> live
+                <span className="live-dot" /> Live
               </span>
             )}
 
-            {/* WebSocket connection indicator */}
-            <div className={`flex items-center gap-1.5 text-xs ${wsConnected ? 'text-emerald-400' : 'text-slate-500'}`}>
-              {wsConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
-              {wsConnected ? 'Connected' : 'Connecting...'}
+            {/* Real-time WebSocket connection indicator */}
+            <div
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                isConnected
+                  ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
+                  : 'bg-amber-500/10 border-amber-500/25 text-amber-400'
+              }`}
+              title={isConnected ? 'Live real-time WebSocket connected' : 'Connecting to real-time updates...'}
+            >
+              {isConnected ? <Wifi size={12} className="animate-pulse" /> : <WifiOff size={12} />}
+              {isConnected ? 'Real-time sync' : 'Connecting...'}
             </div>
           </div>
+
           <h1 className="text-xl sm:text-2xl font-bold text-white leading-snug">{results.question}</h1>
           {lastUpdate && (
             <p className="text-xs text-slate-500 mt-1">
-              Last update: {lastUpdate.toLocaleTimeString()}
+              Last live update: {lastUpdate.toLocaleTimeString()}
             </p>
           )}
         </div>
 
-        <div className="flex-shrink-0">
-          <Link to={`/poll/${id}`} className="btn-secondary text-sm">
+        {/* Action Buttons: Share, QR Code, Vote */}
+        <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+          <button
+            id="share-link-btn"
+            onClick={copyLink}
+            className={`btn-secondary text-sm flex items-center gap-1.5 transition-all ${
+              copied ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10' : ''
+            }`}
+            title="Copy voting link to clipboard"
+          >
+            {copied ? <CheckCircle size={14} /> : <Share2 size={14} />}
+            {copied ? 'Copied Link!' : 'Share Link'}
+          </button>
+
+          <button
+            id="show-qr-btn"
+            onClick={() => setShowQR(true)}
+            className="btn-secondary text-sm flex items-center gap-1.5"
+            title="Display QR code for audience scanning"
+          >
+            <QrCode size={14} /> QR Code
+          </button>
+
+          <Link
+            to={`/poll/${id}`}
+            target="_blank"
+            className="btn-primary text-sm flex items-center gap-1.5"
+            title="Open voting page in a new tab"
+          >
             <ExternalLink size={14} /> Vote
           </Link>
         </div>
@@ -210,12 +262,26 @@ export default function ResultsPage() {
         {results.total_votes === 0 && (
           <div className="text-center py-8">
             <p className="text-slate-500 text-sm">No votes yet. Share the poll link to start collecting responses.</p>
-            <Link to={`/poll/${id}`} className="btn-primary mt-4 text-sm inline-flex">
-              <ExternalLink size={14} /> Open Voting Page
-            </Link>
+            <div className="flex justify-center gap-3 mt-4">
+              <button onClick={copyLink} className="btn-secondary text-sm">
+                <Share2 size={14} /> Copy Voting Link
+              </button>
+              <button onClick={() => setShowQR(true)} className="btn-secondary text-sm">
+                <QrCode size={14} /> Show QR Code
+              </button>
+            </div>
           </div>
         )}
       </div>
+
+      {/* QR Code Modal popup */}
+      {showQR && (
+        <QRCodeModal
+          pollId={id!}
+          question={results.question}
+          onClose={() => setShowQR(false)}
+        />
+      )}
     </div>
   )
 }

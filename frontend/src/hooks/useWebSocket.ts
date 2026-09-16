@@ -1,14 +1,32 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { ResultsResponse } from '../services/api'
-
-// In development, Vite proxy forwards /ws to localhost:8080.
-// In production, use VITE_WS_URL pointing to the Render backend.
-const WS_BASE = import.meta.env.VITE_WS_URL || ''
 
 interface UseWebSocketOptions {
   pollId: string
   onMessage: (data: ResultsResponse) => void
   enabled?: boolean
+}
+
+function getWsUrl(pollId: string): string {
+  // 1. Explicit WS URL (e.g. from .env.production)
+  if (import.meta.env.VITE_WS_URL) {
+    const base = import.meta.env.VITE_WS_URL.replace(/\/$/, '')
+    return `${base}/ws/polls/${pollId}`
+  }
+
+  // 2. Derive from API URL if set
+  if (import.meta.env.VITE_API_URL) {
+    const wsBase = import.meta.env.VITE_API_URL.replace(/^http/, 'ws').replace(/\/$/, '')
+    return `${wsBase}/ws/polls/${pollId}`
+  }
+
+  // 3. Fallback to same host with ws/wss protocol (local development with Vite proxy)
+  if (typeof window !== 'undefined') {
+    const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    return `${proto}//${window.location.host}/ws/polls/${pollId}`
+  }
+
+  return `/ws/polls/${pollId}`
 }
 
 /**
@@ -17,13 +35,13 @@ interface UseWebSocketOptions {
  *
  * Connection lifecycle:
  *   - Connects when `enabled` is true
+ *   - Updates `isConnected` immediately upon onopen / onclose
  *   - Automatically reconnects with exponential backoff on unexpected close
  *   - Sends pong responses to server ping frames (handled by the browser WS API)
  *   - Cleans up on component unmount
- *
- * The server pushes a ResultsResponse JSON payload whenever a vote is recorded.
  */
 export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocketOptions) {
+  const [isConnected, setIsConnected] = useState(false)
   const wsRef         = useRef<WebSocket | null>(null)
   const reconnectRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
   const retriesRef    = useRef(0)
@@ -37,12 +55,13 @@ export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocket
   const connect = useCallback(() => {
     if (!enabledRef.current || !pollId) return
 
-    const url = `${WS_BASE}/ws/polls/${pollId}`
+    const url = getWsUrl(pollId)
     const ws  = new WebSocket(url)
     wsRef.current = ws
 
     ws.onopen = () => {
       retriesRef.current = 0 // reset backoff on successful connection
+      setIsConnected(true)
     }
 
     ws.onmessage = (event) => {
@@ -55,7 +74,8 @@ export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocket
     }
 
     ws.onclose = (event) => {
-      // 1000 = normal close (server-side cleanup); don't reconnect
+      setIsConnected(false)
+      // 1000 = normal close (component unmount/server shutdown)
       if (event.code === 1000 || !enabledRef.current) return
 
       // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
@@ -65,13 +85,17 @@ export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocket
     }
 
     ws.onerror = () => {
-      // onclose will fire after onerror — reconnect logic is there
+      setIsConnected(false)
       ws.close()
     }
   }, [pollId])
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled) {
+      setIsConnected(false)
+      return
+    }
+
     connect()
 
     return () => {
@@ -81,6 +105,9 @@ export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocket
         wsRef.current.onclose = null // prevent reconnect on intentional close
         wsRef.current.close(1000, 'component unmounted')
       }
+      setIsConnected(false)
     }
   }, [enabled, connect])
+
+  return { isConnected }
 }
