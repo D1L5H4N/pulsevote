@@ -20,15 +20,15 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-900/40 group-hover:shadow-violet-900/60 transition-shadow overflow-hidden">
-              <img src="/pwa-192x192.png" alt="Quorum Logo" className="w-full h-full object-cover" onError={(e) => {
-                // Fallback to Zap icon if image isn't loaded yet
-                (e.target as HTMLElement).style.display = 'none'
-              }} />
-              <Zap size={16} className="text-white absolute" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 rounded-xl bg-slate-900 border border-violet-500/30 overflow-hidden shadow-lg shadow-violet-950/50 group-hover:border-violet-400/60 transition-all flex items-center justify-center p-1">
+              <img
+                src="/quorum-q.png"
+                alt="Quorum"
+                className="w-full h-full object-contain"
+              />
             </div>
-            <span className="font-bold text-lg text-white tracking-tight">
+            <span className="font-bold text-xl text-white tracking-tight">
               Quorum
             </span>
           </Link>

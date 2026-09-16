@@ -34,7 +34,7 @@ export default function QRCodeModal({ pollId, question, onClose }: Props) {
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
-    a.download = `pulsevote-poll-${pollId}.svg`
+    a.download = `quorum-poll-${pollId}.svg`
     a.click()
     URL.revokeObjectURL(url)
   }

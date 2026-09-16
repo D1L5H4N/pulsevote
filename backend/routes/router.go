@@ -70,7 +70,7 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 
 	// Health check — used by Render for deployment health validation
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok", "service": "pulsevote-backend"})
+		c.JSON(200, gin.H{"status": "ok", "service": "quorum-backend"})
 	})
 
 	// --- Public API routes ---

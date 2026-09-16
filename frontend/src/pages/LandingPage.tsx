@@ -75,7 +75,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-300 mb-10 max-w-xl leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              PulseVote brings your audience into the conversation. Create a poll, share the link, 
+              Quorum brings your audience into the conversation. Create a poll, share the link, 
               and watch votes flow in live — no page refresh needed.
             </p>
 
@@ -208,8 +208,8 @@ export default function LandingPage() {
       {/* ===== Footer ===== */}
       <footer className="py-10 bg-slate-950 border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-500 text-sm">
-          <p>© {new Date().getFullYear()} PulseVote. Built with React, Go, MongoDB & Redis.</p>
-          <p className="mt-1">HCL GUVI Developer Internship Project</p>
+          <p>© {new Date().getFullYear()} Quorum. Polls. Live. Together.</p>
+          <p className="mt-1">Built with React, Go, MongoDB & Redis • HCL GUVI Developer Internship Project</p>
         </div>
       </footer>
     </div>

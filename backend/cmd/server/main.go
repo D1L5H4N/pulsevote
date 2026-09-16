@@ -63,7 +63,7 @@ func main() {
 
 	// Start listening in a goroutine so the main goroutine can wait for signals
 	go func() {
-		log.Printf("[main] PulseVote server listening on :%s", cfg.Port)
+		log.Printf("[main] Quorum server listening on :%s", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("[main] Server error: %v", err)
 		}
