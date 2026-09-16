@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Zap, LayoutDashboard, PlusCircle, LogOut, Menu, X, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, LogOut, Menu, X, BarChart3 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import InstallPwaButton from './InstallPwaButton'
