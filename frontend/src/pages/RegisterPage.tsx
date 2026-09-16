@@ -44,8 +44,8 @@ export default function RegisterPage() {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md animate-slide-up">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-xl shadow-violet-900/50 mb-5">
-            <Zap size={28} className="text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-900 border border-violet-500/30 shadow-xl shadow-violet-900/50 mb-5 overflow-hidden p-2.5">
+            <img src="/quorum-q.png" alt="Quorum" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Create your account</h1>
           <p className="text-slate-400">Start collecting live poll results today</p>
