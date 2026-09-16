@@ -321,6 +321,22 @@ The current approach hashes `IP + User-Agent`. This is not foolproof:
 
 For production, consider signed HTTP-only cookies as a more reliable voter identifier.
 
+## Progressive Web App (PWA)
+
+Quorum supports installation as a Progressive Web App (PWA).
+
+Features:
+
+- Installable on Android
+- Installable on iPhone/iPad
+- Installable on Desktop
+- Home-screen support
+- Standalone fullscreen mode
+- Automatic updates
+- Offline asset caching
+
+The Quorum logo is used as the application icon across all supported platforms.
+
 ---
 
-*Built by [Your Name] for the HCL GUVI Developer Internship — 2024*
+*Built for the HCL GUVI Developer Internship*
