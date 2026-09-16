@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Zap, LayoutDashboard, PlusCircle, LogOut, Menu, X, BarChart3 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import InstallPwaButton from './InstallPwaButton'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
@@ -20,16 +21,22 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-900/40 group-hover:shadow-violet-900/60 transition-shadow">
-              <Zap size={16} className="text-white" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-900/40 group-hover:shadow-violet-900/60 transition-shadow overflow-hidden">
+              <img src="/pwa-192x192.png" alt="Quorum Logo" className="w-full h-full object-cover" onError={(e) => {
+                // Fallback to Zap icon if image isn't loaded yet
+                (e.target as HTMLElement).style.display = 'none'
+              }} />
+              <Zap size={16} className="text-white absolute" />
             </div>
             <span className="font-bold text-lg text-white tracking-tight">
-              Pulse<span className="text-violet-400">Vote</span>
+              Quorum
             </span>
           </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-2">
+            <InstallPwaButton className="mr-1" />
+
             {user ? (
               <>
                 <Link
@@ -75,13 +82,16 @@ export default function Navbar() {
             )}
           </nav>
 
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile menu toggle & Install button */}
+          <div className="md:hidden flex items-center gap-2">
+            <InstallPwaButton />
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
@@ -92,6 +102,10 @@ export default function Navbar() {
                 <Link to="/dashboard" onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
                   <LayoutDashboard size={16} /> Dashboard
+                </Link>
+                <Link to="/my-polls" onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
+                  <BarChart3 size={16} /> My Polls
                 </Link>
                 <Link to="/polls/create" onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all">
