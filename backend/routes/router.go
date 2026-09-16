@@ -3,6 +3,7 @@
 package routes
 
 import (
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -46,9 +47,20 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 	// --- Gin Engine ---
 	r := gin.Default()
 
-	// CORS: allow the frontend origin and support WebSocket upgrade headers
+	// CORS: allow localhost, any .vercel.app origin, and configured FRONTEND_URL
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{cfg.FrontendURL},
+		AllowOriginFunc: func(origin string) bool {
+			if origin == "" {
+				return true
+			}
+			if origin == cfg.FrontendURL || origin == "http://localhost:5173" || origin == "http://localhost:3000" {
+				return true
+			}
+			if strings.HasSuffix(origin, ".vercel.app") {
+				return true
+			}
+			return false
+		},
 		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
