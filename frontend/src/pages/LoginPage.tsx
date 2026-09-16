@@ -35,8 +35,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md animate-slide-up">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-900 border border-violet-500/30 shadow-xl shadow-violet-900/50 mb-5 overflow-hidden p-2.5">
-            <img src="/quorum-q.png" alt="Quorum" className="w-full h-full object-contain" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-900/60 to-purple-950/80 border border-violet-500/30 shadow-xl shadow-violet-900/50 mb-5 overflow-hidden p-2.5">
+            <img src="/quorum-icon.png" alt="Quorum" className="w-full h-full object-contain rounded-xl" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Welcome back</h1>
           <p className="text-slate-400">Sign in to manage your polls</p>

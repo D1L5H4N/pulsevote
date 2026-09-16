@@ -21,14 +21,14 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 border border-violet-500/30 overflow-hidden shadow-lg shadow-violet-950/50 group-hover:border-violet-400/60 transition-all flex items-center justify-center p-1">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-900/60 to-purple-950/80 border border-violet-500/30 overflow-hidden shadow-lg shadow-violet-900/40 group-hover:border-violet-400 transition-all flex items-center justify-center p-1.5">
               <img
-                src="/quorum-q.png"
+                src="/quorum-icon.png"
                 alt="Quorum"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-xl"
               />
             </div>
-            <span className="font-bold text-xl text-white tracking-tight">
+            <span className="font-extrabold text-2xl text-white tracking-tight">
               Quorum
             </span>
           </Link>
