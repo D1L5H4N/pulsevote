@@ -199,6 +199,20 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-500 text-sm">
           <p>© {new Date().getFullYear()} Quorum. Polls. Live. Together.</p>
           <p className="mt-1">Built with React, Go, MongoDB & Redis</p>
+          <div className="mt-3">
+            <button
+              onClick={() => {
+                try {
+                  sessionStorage.removeItem('quorum_splash_seen')
+                } catch {}
+                window.location.reload()
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-slate-400 hover:text-violet-300 border border-slate-800 hover:border-violet-500/40 bg-slate-900/50 hover:bg-violet-500/10 transition-all cursor-pointer"
+              title="Watch the opening logo animation again"
+            >
+              Replay Intro
+            </button>
+          </div>
         </div>
       </footer>
     </div>

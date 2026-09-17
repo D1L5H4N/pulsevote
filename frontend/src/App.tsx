@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
+import SplashScreen, { SESSION_STORAGE_KEY } from './components/SplashScreen'
 
 import LandingPage    from './pages/LandingPage'
 import LoginPage      from './pages/LoginPage'
@@ -31,12 +33,27 @@ import ResultsPage    from './pages/ResultsPage'
  *   /polls/:id/share  Share page shown after poll creation
  */
 export default function App() {
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('splash') === '1' || params.get('intro') === '1') return true
+      return !sessionStorage.getItem(SESSION_STORAGE_KEY)
+    } catch {
+      return false
+    }
+  })
+
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <div className="min-h-screen bg-slate-950">
-          <Navbar />
-          <main>
+    <>
+      {showSplash && (
+        <SplashScreen onComplete={() => setShowSplash(false)} />
+      )}
+      <BrowserRouter>
+        <AuthProvider>
+          <div className="min-h-screen bg-slate-950">
+            <Navbar />
+            <main>
             <Routes>
               {/* Public */}
               <Route path="/"           element={<LandingPage />} />
@@ -69,5 +86,6 @@ export default function App() {
         </div>
       </AuthProvider>
     </BrowserRouter>
+  </>
   )
 }
