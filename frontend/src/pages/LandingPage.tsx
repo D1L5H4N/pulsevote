@@ -104,7 +104,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <h2 className="section-title mb-4">Everything you need to engage your audience</h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Built with Go, React, MongoDB, and Redis for a truly real-time experience from vote to result.
+              Create interactive polls in seconds, captivate your audience anywhere, and watch every voice shape the conversation in real time.
             </p>
           </div>
 
@@ -198,7 +198,7 @@ export default function LandingPage() {
       <footer className="py-10 bg-slate-950 border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-500 text-sm">
           <p>© {new Date().getFullYear()} Quorum. Polls. Live. Together.</p>
-          <p className="mt-1">Built with React, Go, MongoDB & Redis • HCL GUVI Developer Internship Project</p>
+          <p className="mt-1">Built with React, Go, MongoDB & Redis</p>
         </div>
       </footer>
     </div>
