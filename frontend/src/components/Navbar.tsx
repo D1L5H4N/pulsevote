@@ -96,7 +96,10 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="md:hidden border-t border-slate-800 py-4 space-y-1 animate-fade-in">
+          <div className="md:hidden border-t border-slate-800 py-4 space-y-2 animate-fade-in">
+            <div className="px-2 pb-2 border-b border-slate-800/80">
+              <InstallPwaButton className="w-full justify-center !py-2.5 !text-sm" />
+            </div>
             {user ? (
               <>
                 <Link to="/dashboard" onClick={() => setMenuOpen(false)}

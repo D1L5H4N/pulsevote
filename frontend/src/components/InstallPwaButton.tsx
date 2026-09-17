@@ -59,8 +59,9 @@ export default function InstallPwaButton({ className = '' }: { className?: strin
   return (
     <>
       <button
+        id="download-app-btn"
         onClick={handleInstallClick}
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 transition-all ${className}`}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-md shadow-violet-900/40 border border-violet-400/30 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer ${className}`}
         title="Download and install Quorum as an app"
       >
         <Download size={13} className="animate-bounce" />
