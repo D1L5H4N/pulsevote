@@ -56,12 +56,6 @@ export default function LandingPage() {
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="max-w-3xl">
-            {/* Live badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 text-sm font-medium mb-8 animate-fade-in">
-              <span className="live-dot" />
-              Real-time updates via WebSocket
-            </div>
-
             {/* Headline */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate-slide-up">
               Create Live Polls.{' '}
@@ -167,11 +161,6 @@ export default function LandingPage() {
                 alt="Team collaboration session"
                 className="relative rounded-2xl object-cover w-full h-80 lg:h-96 shadow-2xl"
               />
-              {/* Live overlay badge */}
-              <div className="absolute bottom-4 left-4 glass-card px-4 py-2 flex items-center gap-2">
-                <span className="live-dot" />
-                <span className="text-sm text-white font-medium">Live updates active</span>
-              </div>
             </div>
           </div>
         </div>

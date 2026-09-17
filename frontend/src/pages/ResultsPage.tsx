@@ -5,7 +5,7 @@ import {
   ResponsiveContainer, Cell
 } from 'recharts'
 import {
-  BarChart3, Users, ExternalLink, Wifi, WifiOff,
+  BarChart3, Users, ExternalLink,
   Share2, QrCode, CheckCircle
 } from 'lucide-react'
 import { voteApi, ResultsResponse } from '../services/api'
@@ -44,7 +44,7 @@ export default function ResultsPage() {
     setLastUpdate(new Date())
   }, [])
 
-  const { isConnected } = useWebSocket({
+  useWebSocket({
     pollId: id!,
     onMessage: handleMessage,
     enabled: !!id,
@@ -107,19 +107,6 @@ export default function ResultsPage() {
                 <span className="live-dot" /> Live
               </span>
             )}
-
-            {/* Real-time WebSocket connection indicator */}
-            <div
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                isConnected
-                  ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
-                  : 'bg-amber-500/10 border-amber-500/25 text-amber-400'
-              }`}
-              title={isConnected ? 'Live real-time WebSocket connected' : 'Connecting to real-time updates...'}
-            >
-              {isConnected ? <Wifi size={12} className="animate-pulse" /> : <WifiOff size={12} />}
-              {isConnected ? 'Real-time sync' : 'Connecting...'}
-            </div>
           </div>
 
           <h1 className="text-xl sm:text-2xl font-bold text-white leading-snug">{results.question}</h1>
