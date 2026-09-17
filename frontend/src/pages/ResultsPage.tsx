@@ -1,23 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell
-} from 'recharts'
-import {
-  BarChart3, Users, ExternalLink,
-  Share2, QrCode, CheckCircle
+  BarChart3, ExternalLink,
+  Share2, QrCode, CheckCircle, Clock
 } from 'lucide-react'
 import { voteApi, ResultsResponse } from '../services/api'
 import { useWebSocket } from '../hooks/useWebSocket'
 import QRCodeModal from '../components/QRCodeModal'
-
-// Colour palette for chart bars — cycles through if > 6 options
-const BAR_COLORS = ['#7c3aed', '#a855f7', '#8b5cf6', '#6d28d9', '#9333ea', '#c026d3']
-
-function formatPct(n: number) {
-  return n % 1 === 0 ? `${n}%` : `${n.toFixed(1)}%`
-}
+import ResultsChart from '../components/ResultsChart'
 
 export default function ResultsPage() {
   const { id } = useParams<{ id: string }>()
@@ -85,12 +75,6 @@ export default function ResultsPage() {
   }
 
   const isClosed = results.status !== 'active'
-  const chartData = results.results.map((r) => ({
-    name: r.option.length > 20 ? r.option.slice(0, 20) + '…' : r.option,
-    fullName: r.option,
-    votes: r.votes,
-    percentage: r.percentage,
-  }))
 
   return (
     <div className="page-container max-w-3xl mx-auto animate-fade-in">
@@ -104,14 +88,15 @@ export default function ResultsPage() {
               </span>
             ) : (
               <span className="badge-active">
-                <span className="live-dot" /> Live
+                <span className="live-dot" /> Live Polling
               </span>
             )}
           </div>
 
           <h1 className="text-xl sm:text-2xl font-bold text-white leading-snug">{results.question}</h1>
           {lastUpdate && (
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
+              <Clock size={12} className="text-slate-600" />
               Last live update: {lastUpdate.toLocaleTimeString()}
             </p>
           )}
@@ -151,105 +136,17 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {/* Total Votes */}
-      <div className="glass-card p-5 mb-6 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center">
-          <Users size={22} className="text-violet-400" />
-        </div>
-        <div>
-          <p className="text-slate-400 text-sm">Total Votes</p>
-          <p className="text-3xl font-bold text-white">{results.total_votes.toLocaleString()}</p>
-        </div>
-      </div>
-
-      {/* Animated Bar Chart (Recharts) */}
-      {results.total_votes > 0 && (
-        <div className="glass-card p-6 mb-6">
-          <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wide mb-5">Vote Distribution</h2>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-              <XAxis
-                dataKey="name"
-                tick={{ fill: '#94a3b8', fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fill: '#94a3b8', fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#1e293b',
-                  border: '1px solid #334155',
-                  borderRadius: '12px',
-                  color: '#f1f5f9',
-                }}
-                formatter={(value: number, _: string, entry) => [
-                  `${value} votes (${formatPct(entry.payload.percentage)})`,
-                  entry.payload.fullName,
-                ]}
-                labelFormatter={() => ''}
-              />
-              <Bar dataKey="votes" radius={[6, 6, 0, 0]} isAnimationActive animationDuration={600}>
-                {chartData.map((_, index) => (
-                  <Cell key={index} fill={BAR_COLORS[index % BAR_COLORS.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Option-by-option breakdown */}
-      <div className="glass-card p-6">
-        <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wide mb-5">Breakdown</h2>
-        <div className="space-y-5">
-          {results.results.map((r, i) => {
-            const isWinner = results.total_votes > 0 &&
-              r.votes === Math.max(...results.results.map((x) => x.votes)) &&
-              r.votes > 0
-
-            return (
-              <div key={i} id={`result-option-${i}`}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-200 text-sm font-medium">{r.option}</span>
-                    {isWinner && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 font-medium">
-                        Leading
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-400 text-sm">{r.votes.toLocaleString()} votes</span>
-                    <span className="text-white font-semibold text-sm w-12 text-right">
-                      {formatPct(r.percentage)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Animated progress bar */}
-                <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="result-bar"
-                    style={{
-                      width: `${r.percentage}%`,
-                      background: `linear-gradient(90deg, ${BAR_COLORS[i % BAR_COLORS.length]}cc, ${BAR_COLORS[i % BAR_COLORS.length]})`,
-                    }}
-                  />
-                </div>
-              </div>
-            )
-          })}
-        </div>
+      {/* Main Graphic Distribution Card */}
+      <div className="glass-card p-5 sm:p-6 mb-6 shadow-2xl border-slate-800/80">
+        <ResultsChart
+          results={results}
+          showLeadBanner={true}
+          showDetailedBreakdown={true}
+        />
 
         {results.total_votes === 0 && (
-          <div className="text-center py-8">
-            <p className="text-slate-500 text-sm">No votes yet. Share the poll link to start collecting responses.</p>
-            <div className="flex justify-center gap-3 mt-4">
+          <div className="text-center py-6 border-t border-slate-800/60 mt-4">
+            <div className="flex justify-center gap-3">
               <button onClick={copyLink} className="btn-secondary text-sm">
                 <Share2 size={14} /> Copy Voting Link
               </button>

@@ -140,34 +140,13 @@ export default function PollDetailPage() {
             </div>
           </div>
 
-          {/* Chart */}
-          <div className="glass-card p-6">
-            <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wide mb-5">Vote Distribution</h2>
-            <ResultsChart results={results} />
-          </div>
-
-          {/* Breakdown */}
-          <div className="glass-card p-6">
-            <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wide mb-5">Option Breakdown</h2>
-            <div className="space-y-4">
-              {results.results.map((r, i) => {
-                const isLeading = results.total_votes > 0 && r.votes === Math.max(...results.results.map((x) => x.votes)) && r.votes > 0
-                return (
-                  <div key={i}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-slate-200 text-sm">{r.option}</span>
-                        {isLeading && <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300">Leading</span>}
-                      </div>
-                      <span className="text-white font-semibold text-sm">{r.percentage.toFixed(1)}% · {r.votes}</span>
-                    </div>
-                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                      <div className="result-bar" style={{ width: `${r.percentage}%` }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+          {/* Graphic Vote Distribution & Analytics */}
+          <div className="glass-card p-6 shadow-2xl border-slate-800/80">
+            <ResultsChart
+              results={results}
+              showLeadBanner={true}
+              showDetailedBreakdown={true}
+            />
           </div>
         </div>
 
