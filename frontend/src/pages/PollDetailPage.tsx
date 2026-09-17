@@ -49,7 +49,7 @@ export default function PollDetailPage() {
       .finally(() => setLoading(false))
   }, [id, user, navigate])
 
-  // Live results via WebSocket — same as ResultsPage
+  // Live results via WebSocket (same as ResultsPage)
   const handleMessage = useCallback((data: ResultsResponse) => {
     setResults(data)
   }, [])

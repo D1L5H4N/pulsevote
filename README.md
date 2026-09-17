@@ -1,8 +1,8 @@
-# Quorum — Real-Time Live Polling Platform
+# Quorum: Real-Time Live Polling Platform
 
 > A production-ready, full-stack real-time polling application built with Go, React, MongoDB, and Redis.
 
-Quorum lets users create polls, share them instantly via link or QR code, and watch every vote stream in live — no page refresh, no polling APIs, true WebSocket-powered real-time updates. Your audience votes, you see it happen.
+Quorum lets users create polls, share them instantly via link or QR code, and watch every vote stream in live with no page refresh, no polling APIs, and true WebSocket-powered real-time updates. Your audience votes, you see it happen.
 
 ---
 
@@ -19,31 +19,31 @@ Quorum lets users create polls, share them instantly via link or QR code, and wa
 ## ✨ Feature Overview
 
 ### Core Features
-- 🗳️ **Create Polls** — Up to 6 options, optional expiry deadline
-- 🔗 **Instant Sharing** — Copy link or scan QR code
-- ⚡ **Live Voting** — WebSocket-powered; votes appear for all viewers instantly
-- 📊 **Real-Time Results** — Animated bar charts (Recharts) update as votes come in
-- 🔐 **Authentication** — JWT-based login/register system
-- 🗂️ **My Polls Dashboard** — Manage, close, and delete your polls
-- 📋 **Poll Detail View** — View full stats and vote breakdown per option
-- 📱 **Mobile Responsive** — Optimised for all screen sizes
+- 🗳️ **Create Polls**: Up to 6 options, optional expiry deadline
+- 🔗 **Instant Sharing**: Copy link or scan QR code
+- ⚡ **Live Voting**: WebSocket-powered; votes appear for all viewers instantly
+- 📊 **Real-Time Results**: Animated bar charts (Recharts) update as votes come in
+- 🔐 **Authentication**: JWT-based login/register system
+- 🗂️ **My Polls Dashboard**: Manage, close, and delete your polls
+- 📋 **Poll Detail View**: View full stats and vote breakdown per option
+- 📱 **Mobile Responsive**: Optimised for all screen sizes
 
 ### Progressive Web App (PWA)
-- 📲 **Installable on Android** via Chrome/Edge — native install prompt
-- 📲 **Installable on iPhone/iPad** via Safari — step-by-step guide modal
-- 🖥️ **Installable on Desktop** — Windows/macOS/Linux Chrome/Edge
+- 📲 **Installable on Android** via Chrome/Edge with native install prompt
+- 📲 **Installable on iPhone/iPad** via Safari with step-by-step guide modal
+- 🖥️ **Installable on Desktop** on Windows, macOS, and Linux (Chrome/Edge)
 - 🏠 **Home Screen / Desktop Shortcut** support
 - 📴 **Offline Asset Caching** via Workbox service worker
-- 🔄 **Auto-Update** — New deployments apply automatically
-- 🟣 **Download App button** in the navbar — one click to install
+- 🔄 **Auto-Update**: New deployments apply automatically
+- 🟣 **Download App button** in the navbar for one-click install
 
 ### UX & Design
 - 🌑 **Dark-mode first** design system (slate-950 base)
 - 🎨 **Violet/Purple gradient** branding throughout
-- 🪄 **SplashScreen animation** — custom SVG logo assembles on first visit
-- 📸 **QR Code Modal** — Canvas-based QR code with PNG download, copy link, and native share (Web Share API)
-- 🖼️ **Landing Page** — SaaS-style hero with animated background orbs, features grid, use-cases
-- 🧭 **Navbar** — Sticky, mobile hamburger menu, Download App button, auth-aware
+- 🪄 **SplashScreen animation**: Custom SVG logo assembles on first visit
+- 📸 **QR Code Modal**: Canvas-based QR code with PNG download, copy link, and native share (Web Share API)
+- 🖼️ **Landing Page**: SaaS-style hero with animated background orbs, features grid, use-cases
+- 🧭 **Navbar**: Sticky, mobile hamburger menu, Download App button, auth-aware
 
 ---
 
@@ -118,7 +118,7 @@ User          React           Go/Gin          MongoDB        Redis          WS C
 | **Icons**    | Lucide React                    | Consistent, lightweight SVG icon set                               |
 | **Routing**  | React Router DOM v6             | Client-side SPA routing, nested protected routes                   |
 | **Backend**  | Go 1.21 + Gin                   | Goroutine-per-connection, excellent WebSocket support               |
-| **Auth**     | JWT HS256 (golang-jwt)          | Stateless, works well with Vercel → Render CORS setup              |
+| **Auth**     | JWT HS256 (golang-jwt)          | Stateless, works well with Vercel to Render CORS setup              |
 | **Database** | MongoDB Atlas                   | Flexible document model for polls/votes, compound indexes          |
 | **Realtime** | Redis Pub/Sub (Upstash)         | Decouples vote ingestion from WebSocket broadcast                   |
 | **WS**       | Gorilla WebSocket               | Per-poll WebSocket hub with Redis subscription                     |
@@ -131,7 +131,7 @@ User          React           Go/Gin          MongoDB        Redis          WS C
 
 ```
 quorum/
-├── frontend/                              # React + Vite app (→ Vercel)
+├── frontend/                              # React + Vite app (deployed to Vercel)
 │   ├── public/
 │   │   ├── favicon.ico
 │   │   ├── apple-touch-icon.png           # iOS home screen icon
@@ -145,10 +145,10 @@ quorum/
 │   │   │   ├── Navbar.tsx                 # Sticky nav, mobile menu, Download App button
 │   │   │   ├── ProtectedRoute.tsx         # Auth guard, redirects to /login
 │   │   │   ├── InstallPwaButton.tsx       # PWA install button (Android/Desktop prompt + iOS modal)
-│   │   │   ├── QRCodeModal.tsx            # Full-screen QR modal — copy, share, PNG download
+│   │   │   ├── QRCodeModal.tsx            # Full-screen QR modal: copy, share, PNG download
 │   │   │   ├── PollCard.tsx              # Reusable poll card for dashboard/my-polls
-│   │   │   ├── ResultsChart.tsx          # Recharts bar chart for live results
-│   │   │   ├── SplashScreen.tsx          # Animated intro — SVG ring logo assembles on load
+│   │   │   ├── ResultsChart.tsx          # Recharts multi-view chart for live results
+│   │   │   ├── SplashScreen.tsx          # Animated intro: SVG ring logo assembles on load
 │   │   │   └── SplashScreen.css          # Splash keyframe animations
 │   │   ├── context/
 │   │   │   └── AuthContext.tsx            # JWT + user state, localStorage session management
@@ -160,14 +160,14 @@ quorum/
 │   │   │   ├── RegisterPage.tsx           # Username + email + password register form
 │   │   │   ├── DashboardPage.tsx          # Stats overview + poll table (owner)
 │   │   │   ├── MyPollsPage.tsx            # Paginated list of user's polls
-│   │   │   ├── CreatePollPage.tsx         # Dynamic options form (2–6 options), expiry picker
+│   │   │   ├── CreatePollPage.tsx         # Dynamic options form (2 to 6 options), expiry picker
 │   │   │   ├── PollSharePage.tsx          # QR code + copy link + share after poll creation
 │   │   │   ├── PollDetailPage.tsx         # Full poll stats breakdown, manage controls
 │   │   │   ├── VotingPage.tsx             # Public voting UI (no auth required)
 │   │   │   └── ResultsPage.tsx            # Live results with WebSocket + Recharts
 │   │   ├── services/
 │   │   │   └── api.ts                     # Axios instance + fully typed API calls
-│   │   ├── App.tsx                        # Root component — routing + SplashScreen orchestration
+│   │   ├── App.tsx                        # Root component: routing + SplashScreen orchestration
 │   │   ├── index.css                      # Global design system, animations, utilities
 │   │   └── vite-env.d.ts
 │   ├── index.html                         # Entry HTML, SEO meta tags
@@ -178,7 +178,7 @@ quorum/
 │   ├── package.json
 │   └── .env.example
 │
-└── backend/                               # Go service (→ Render)
+└── backend/                               # Go service (deployed to Render)
     ├── cmd/server/main.go                 # Entry point, graceful shutdown (SIGINT/SIGTERM)
     ├── configs/config.go                  # Env var loader, fail-fast validation on startup
     ├── routes/router.go                   # Gin router, dependency wiring, CORS setup
@@ -189,7 +189,7 @@ quorum/
     │   │   ├── service.go                 # bcrypt password hashing, JWT generation
     │   │   └── handler.go                 # HTTP handlers: POST /register, POST /login
     │   ├── poll/
-    │   │   ├── models.go                  # Poll struct — active / closed / expired states
+    │   │   ├── models.go                  # Poll struct: active / closed / expired states
     │   │   ├── repository.go              # MongoDB CRUD for polls
     │   │   ├── service.go                 # Lazy expiration, ownership checks
     │   │   └── handler.go                 # HTTP handlers: CRUD + close + dashboard
@@ -223,8 +223,8 @@ quorum/
 | `/`                    | No            | Landing page with hero, features, and CTA        |
 | `/login`               | No            | Login form                                       |
 | `/register`            | No            | Registration form                                |
-| `/poll/:id`            | No            | Public voting page — anyone can vote             |
-| `/results/:id`         | No            | Live results page — real-time bar chart          |
+| `/poll/:id`            | No            | Public voting page: anyone can vote              |
+| `/results/:id`         | No            | Live results page: real-time bar chart           |
 | `/dashboard`           | ✅ JWT         | Stats overview + poll list                       |
 | `/my-polls`            | ✅ JWT         | Full paginated poll management list              |
 | `/polls/create`        | ✅ JWT         | Create a new poll                                |
@@ -257,12 +257,12 @@ quorum/
 The app opens with an animated **Quorum logo assembly** on every fresh session:
 
 - 12 evenly-spaced dots on a true circle (center 230,230 radius 150) starting at 12 o'clock
-- **Slot 5** is empty — occupied by an animated tail (curved arc)
+- **Slot 5** is empty: occupied by an animated tail (curved arc)
 - **Dots 9, 10, 11** (upper-left arc) start dimmed (`#31304a`) and illuminate full violet on cue
-- **Phase 1 (0–1.8 s)** — dots fade in one by one with a stagger, tail draws itself
-- **Phase 2 (1.8–2.8 s)** — dim dots illuminate; wordmark "Quorum" and tagline slide up
-- **Phase 3 (2.8–3.3 s)** — everything fades to black, hands off to the main app
-- Uses `sessionStorage` — only plays once per browser session (or when `?splash=1` param is present)
+- **Phase 1 (0 to 1.8 s)**: dots fade in one by one with a stagger, tail draws itself
+- **Phase 2 (1.8 to 2.8 s)**: dim dots illuminate; wordmark "Quorum" and tagline slide up
+- **Phase 3 (2.8 to 3.3 s)**: everything fades to black, hands off to the main app
+- Uses `sessionStorage`: only plays once per browser session (or when `?splash=1` param is present)
 - Implemented as a React component (`SplashScreen.tsx`) with CSS keyframe animations
 
 ---
@@ -275,14 +275,14 @@ Quorum is a fully installable PWA powered by **vite-plugin-pwa** and **Workbox**
 
 | Platform            | How to Install                                                      |
 |---------------------|---------------------------------------------------------------------|
-| **Android (Chrome)**| Click **"Download App"** in navbar → tap Install in native prompt   |
+| **Android (Chrome)**| Click **"Download App"** in navbar, then tap Install in native prompt |
 | **Desktop (Chrome/Edge)** | Click **"Download App"** in navbar or the install icon in the address bar |
-| **iPhone/iPad (Safari)** | Click **"Download App"** → follow the 3-step guide (Share → Add to Home Screen → Add) |
+| **iPhone/iPad (Safari)** | Click **"Download App"**, then follow the 3-step guide (Share → Add to Home Screen → Add) |
 
 ### PWA Configuration (`vite.config.ts`)
-- `registerType: 'autoUpdate'` — new app versions apply automatically
-- `skipWaiting: true` + `clientsClaim: true` — immediate takeover on update
-- `cleanupOutdatedCaches: true` — removes stale Workbox caches
+- `registerType: 'autoUpdate'`: new app versions apply automatically
+- `skipWaiting: true` + `clientsClaim: true`: immediate takeover on update
+- `cleanupOutdatedCaches: true`: removes stale Workbox caches
 - Icons: 192×192 and 512×512 PNG (maskable), Apple touch icon 180×180
 
 ### InstallPwaButton Component
@@ -314,13 +314,13 @@ Handles cross-platform PWA installation:
 
 ### `QRCodeModal.tsx`
 Full-screen modal displayed from the Poll Share page and Poll Detail page:
-- Renders QR code using `QRCodeCanvas` (HTML5 Canvas — no XML/SVG issues)
-- **Copy Link** — copies the poll URL to clipboard with animated feedback
-- **Share** — uses the native Web Share API (falls back gracefully)
-- **Download Image** — exports the canvas as a high-resolution `.png` file
+- Renders QR code using `QRCodeCanvas` (HTML5 Canvas: no XML/SVG issues)
+- **Copy Link**: copies the poll URL to clipboard with animated feedback
+- **Share**: uses the native Web Share API (falls back gracefully)
+- **Download Image**: exports the canvas as a high-resolution `.png` file
 
 ### `ResultsChart.tsx`
-Recharts `BarChart` connected to WebSocket data. Animates on every vote update.
+Multi-view chart supporting Columns (Vertical Bar), Bars (Horizontal Bar), and Donut Chart, complete with Leader Spotlight Banner and ranked breakdown cards with medals.
 
 ### `PollCard.tsx`
 Reusable card component used in Dashboard and My Polls. Shows title, status badge, vote count, and action buttons.
@@ -334,7 +334,7 @@ Wraps protected pages. Reads JWT from `AuthContext`. Redirects to `/login` if no
 
 | Concern                      | Implementation                                                              |
 |------------------------------|-----------------------------------------------------------------------------|
-| **Password storage**         | bcrypt (cost 12) — never stored in plaintext                                |
+| **Password storage**         | bcrypt (cost 12): never stored in plaintext                                |
 | **Session tokens**           | JWT HS256, stored in `localStorage`, sent as `Authorization: Bearer <token>`|
 | **Protected routes**         | `ProtectedRoute` component + Go JWT middleware on all `/api/polls` mutations|
 | **Ownership enforcement**    | `poll.CreatorID == requestingUserID` checked in the service layer           |
@@ -343,7 +343,7 @@ Wraps protected pages. Reads JWT from `AuthContext`. Redirects to `/login` if no
 | **CORS**                     | `gin-contrib/cors` configured to allow only the Vercel frontend origin      |
 | **Input validation**         | `go-playground/validator` on all request bodies                             |
 
-> **Voter fingerprinting note:** The IP + User-Agent hash is a basic duplicate-prevention measure. It is not foolproof — shared NAT (office/university networks) or VPN changes can bypass it. For production, signed HTTP-only cookies or device fingerprinting would be more reliable.
+> **Voter fingerprinting note:** The IP + User-Agent hash is a basic duplicate-prevention measure. It is not foolproof: shared NAT (office/university networks) or VPN changes can bypass it. For production, signed HTTP-only cookies or device fingerprinting would be more reliable.
 
 ---
 
@@ -423,11 +423,11 @@ Vite automatically proxies `/api/*` → `http://localhost:8080` and `/ws/*` → 
 | Variable           | Required | Default     | Description                               |
 |--------------------|:--------:|-------------|-------------------------------------------|
 | `PORT`             | No       | `8080`      | HTTP server port                          |
-| `MONGODB_URI`      | **Yes**  | —           | MongoDB Atlas connection string           |
+| `MONGODB_URI`      | **Yes**  | None        | MongoDB Atlas connection string           |
 | `DB_NAME`          | No       | `pulsevote` | MongoDB database name                     |
-| `JWT_SECRET`       | **Yes**  | —           | Long random string for JWT signing        |
-| `REDIS_URL`        | **Yes**  | —           | Upstash Redis URL (`rediss://...`)        |
-| `REDIS_PASSWORD`   | No       | —           | Usually embedded in `REDIS_URL`           |
+| `JWT_SECRET`       | **Yes**  | None        | Long random string for JWT signing        |
+| `REDIS_URL`        | **Yes**  | None        | Upstash Redis URL (`rediss://...`)        |
+| `REDIS_PASSWORD`   | No       | None        | Usually embedded in `REDIS_URL`           |
 | `FRONTEND_URL`     | No       | `http://localhost:5173` | Vercel URL for CORS          |
 
 ### Frontend (`frontend/.env`)
@@ -502,7 +502,7 @@ Vite automatically proxies `/api/*` → `http://localhost:8080` and `/ws/*` → 
 | Feature                         | Status |
 |---------------------------------|--------|
 | User registration & login       | ✅     |
-| Create poll (2–6 options)       | ✅     |
+| Create poll (2 to 6 options)    | ✅     |
 | Vote on public poll (no auth)   | ✅     |
 | Live results via WebSocket      | ✅     |
 | Duplicate vote prevention       | ✅     |
@@ -512,8 +512,8 @@ Vite automatically proxies `/api/*` → `http://localhost:8080` and `/ws/*` → 
 | My Polls page                   | ✅     |
 | Poll detail page                | ✅     |
 | QR code modal (copy/share/PNG)  | ✅     |
-| PWA install — Android/Desktop   | ✅     |
-| PWA install — iOS Safari guide  | ✅     |
+| PWA install (Android / Desktop) | ✅     |
+| PWA install (iOS Safari guide)  | ✅     |
 | Splash screen animation         | ✅     |
 | Auto-update via service worker  | ✅     |
 | Deployed to Vercel + Render     | ✅     |
@@ -527,4 +527,4 @@ This project was built as a hands-on full-stack engineering exercise.
 
 ---
 
-*Quorum — Where every vote counts, instantly.*
+*Quorum: Where every vote counts, instantly.*

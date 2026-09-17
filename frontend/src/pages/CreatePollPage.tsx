@@ -106,7 +106,7 @@ export default function CreatePollPage() {
             <label className="text-sm font-medium text-slate-300">
               Options <span className="text-slate-500">({filledOptions}/{MAX_OPTIONS})</span>
             </label>
-            <span className="text-xs text-slate-500">{MIN_OPTIONS}–{MAX_OPTIONS} options</span>
+            <span className="text-xs text-slate-500">{MIN_OPTIONS} to {MAX_OPTIONS} options</span>
           </div>
 
           <div className="space-y-3">

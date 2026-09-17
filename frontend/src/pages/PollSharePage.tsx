@@ -244,7 +244,7 @@ export default function PollSharePage() {
       {/* Warning */}
       <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm mb-8">
         <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
-        <p>Anyone with this link can vote. The poll link is permanent — votes are counted until the poll is closed or expires.</p>
+        <p>Anyone with this link can vote. The poll link is permanent: votes are counted until the poll is closed or expires.</p>
       </div>
 
       {/* Navigation */}

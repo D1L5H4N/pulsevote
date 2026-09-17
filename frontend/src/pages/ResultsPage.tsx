@@ -28,7 +28,7 @@ export default function ResultsPage() {
       .finally(() => setLoading(false))
   }, [id])
 
-  // Real-time updates via WebSocket — no page refresh needed
+  // Real-time updates via WebSocket (no page refresh needed)
   const handleMessage = useCallback((data: ResultsResponse) => {
     setResults(data)
     setLastUpdate(new Date())

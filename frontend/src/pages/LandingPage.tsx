@@ -10,7 +10,7 @@ const features = [
   {
     icon: <Users size={22} className="text-violet-400" />,
     title: 'Audience Votes',
-    desc: 'Anyone with the link can vote — no account required. Mobile-optimised for on-the-go audiences.',
+    desc: 'Anyone with the link can vote with no account required. Mobile-optimised for on-the-go audiences.',
   },
   {
     icon: <BarChart3 size={22} className="text-violet-400" />,
@@ -20,7 +20,7 @@ const features = [
   {
     icon: <Share2 size={22} className="text-violet-400" />,
     title: 'Easy Sharing',
-    desc: 'Copy your poll link or scan the QR code — perfect for live events and presentations.',
+    desc: 'Copy your poll link or scan the QR code, perfect for live events and presentations.',
   },
 ]
 
@@ -70,7 +70,7 @@ export default function LandingPage() {
 
             <p className="text-lg sm:text-xl text-slate-300 mb-10 max-w-xl leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>
               Quorum brings your audience into the conversation. Create a poll, share the link, 
-              and watch votes flow in live — no page refresh needed.
+              and watch votes flow in live with no page refresh needed.
             </p>
 
             {/* CTAs */}
@@ -137,7 +137,7 @@ export default function LandingPage() {
               <div className="space-y-6">
                 {[
                   { step: '01', title: 'Create your poll', desc: 'Write your question, add up to 6 options, and optionally set an expiry time.' },
-                  { step: '02', title: 'Share the link', desc: 'Copy the URL or scan the QR code. Anyone with the link can vote — no account needed.' },
+                  { step: '02', title: 'Share the link', desc: 'Copy the URL or scan the QR code. Anyone with the link can vote with no account needed.' },
                   { step: '03', title: 'Watch results live', desc: 'Results update instantly via WebSocket as votes come in. No refresh, no waiting.' },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-4">
@@ -189,7 +189,7 @@ export default function LandingPage() {
           <h2 className="section-title mb-4">Ready to engage your audience?</h2>
           <p className="text-slate-300 text-lg mb-8">Create your first poll for free. No credit card required.</p>
           <Link to="/register" className="btn-primary text-base px-10 py-4 inline-flex">
-            Get Started — It's Free <ArrowRight size={18} />
+            Get Started (Free) <ArrowRight size={18} />
           </Link>
         </div>
       </section>
