@@ -1,4 +1,4 @@
-package auth
+﻿package auth
 
 import (
 	"context"
@@ -118,7 +118,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest) (*AuthResponse, 
 // Returns ErrInvalidToken for any validation failure.
 func (s *Service) ValidateToken(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (interface{}, error) {
-		// Ensure the signing method is HMAC — reject tokens signed with unexpected algorithms.
+		// Ensure the signing method is HMAC - reject tokens signed with unexpected algorithms.
 		// This prevents algorithm confusion attacks.
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, ErrInvalidToken

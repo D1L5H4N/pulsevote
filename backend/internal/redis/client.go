@@ -46,3 +46,9 @@ func CounterKey(pollID string, optionIndex int) string {
 func ChannelName(pollID string) string {
 	return fmt.Sprintf("pulsevote:poll:%s", pollID)
 }
+
+// PresenceKey returns the namespaced Redis key for tracking connected viewers.
+// Example: pulsevote:poll:abc123:viewers
+func PresenceKey(pollID string) string {
+	return fmt.Sprintf("pulsevote:poll:%s:viewers", pollID)
+}

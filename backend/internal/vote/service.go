@@ -172,13 +172,41 @@ func (s *Service) computeResults(ctx context.Context, p *poll.Poll) (*poll.Resul
 		}
 	}
 
+	// Query presence count from Redis
+	var totalViewers int64
+	viewersVal, err := s.redis.Get(ctx, redisutil.PresenceKey(p.ID.Hex())).Int64()
+	if err == nil && viewersVal > 0 {
+		totalViewers = viewersVal
+	}
+	if totalViewers < total {
+		totalViewers = total
+	}
+
+	observing := totalViewers - total
+	if observing < 0 {
+		observing = 0
+	}
+
 	return &poll.ResultsResponse{
-		PollID:   p.ID.Hex(),
-		Question: p.Question,
-		Status:   p.Status,
-		Results:  results,
-		Total:    total,
+		PollID:             p.ID.Hex(),
+		Question:           p.Question,
+		Status:             p.Status,
+		Results:            results,
+		Total:              total,
+		ExpiresAt:          p.ExpiresAt,
+		TotalViewers:       totalViewers,
+		ActiveParticipants: total,
+		Observing:          observing,
 	}, nil
+}
+
+// GetTimeline returns chronological vote velocity data for a poll.
+func (s *Service) GetTimeline(ctx context.Context, pollID string) ([]TimelinePoint, error) {
+	oid, err := primitive.ObjectIDFromHex(pollID)
+	if err != nil {
+		return nil, poll.ErrPollNotFound
+	}
+	return s.voteRepo.GetTimeline(ctx, oid)
 }
 
 // getCountsFromRedis retrieves all option counters via MGET (a single round-trip).

@@ -74,3 +74,44 @@ func (r *Repository) CountByPollAndOption(ctx context.Context, pollID primitive.
 func (r *Repository) TotalForPoll(ctx context.Context, pollID primitive.ObjectID) (int64, error) {
 	return r.collection.CountDocuments(ctx, bson.M{"poll_id": pollID})
 }
+
+// GetTimeline returns vote activity bucketed by minute for a poll.
+func (r *Repository) GetTimeline(ctx context.Context, pollID primitive.ObjectID) ([]TimelinePoint, error) {
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{"poll_id": pollID}}},
+		{{Key: "$group", Value: bson.M{
+			"_id":   bson.M{"$dateToString": bson.M{"format": "%H:%M", "date": "$created_at"}},
+			"votes": bson.M{"$sum": 1},
+		}}},
+		{{Key: "$sort", Value: bson.M{"_id": 1}}},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	type bucketResult struct {
+		Timestamp string `bson:"_id"`
+		Votes     int64  `bson:"votes"`
+	}
+
+	var buckets []bucketResult
+	if err := cursor.All(ctx, &buckets); err != nil {
+		return nil, err
+	}
+
+	timeline := make([]TimelinePoint, 0, len(buckets))
+	var cumulative int64
+	for _, b := range buckets {
+		cumulative += b.Votes
+		timeline = append(timeline, TimelinePoint{
+			Timestamp:  b.Timestamp,
+			Votes:      b.Votes,
+			Cumulative: cumulative,
+		})
+	}
+
+	return timeline, nil
+}

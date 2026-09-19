@@ -22,10 +22,15 @@ Quorum lets users create polls, share them instantly via link or QR code, and wa
 - 🗳️ **Create Polls**: Up to 6 options, optional expiry deadline
 - 🔗 **Instant Sharing**: Copy link or scan QR code
 - ⚡ **Live Voting**: WebSocket-powered; votes appear for all viewers instantly
-- 📊 **Real-Time Results**: Animated bar charts (Recharts) update as votes come in
+- 📊 **Real-Time Results**: Multi-view animated charts (Columns, Bars, Donut) with Recharts
+- 👥 **Live Participant Counter**: Real-time Redis presence tracking (viewers, voted, observing)
+- ⏯️ **Poll Open / Close / Reopen Controls**: Full lifecycle controls with instant cross-client synchronization
+- 📈 **Live Analytics Dashboard**: Metric cards for total votes, live viewers, turnout rate %, and front-runner
+- ⏳ **Voting Timeline Activity**: Real-time chronological vote velocity area curves
+- ⏱️ **Poll Expiration Countdown**: Live countdown timer with automatic deadline closure and broadcast
 - 🔐 **Authentication**: JWT-based login/register system
-- 🗂️ **My Polls Dashboard**: Manage, close, and delete your polls
-- 📋 **Poll Detail View**: View full stats and vote breakdown per option
+- 🗂️ **My Polls Dashboard**: Manage, close, reopen, and delete your polls
+- 📋 **Poll Detail View**: Full stats, management controls, and timeline analytics
 - 📱 **Mobile Responsive**: Optimised for all screen sizes
 
 ### Progressive Web App (PWA)
@@ -147,13 +152,18 @@ quorum/
 │   │   │   ├── InstallPwaButton.tsx       # PWA install button (Android/Desktop prompt + iOS modal)
 │   │   │   ├── QRCodeModal.tsx            # Full-screen QR modal: copy, share, PNG download
 │   │   │   ├── PollCard.tsx              # Reusable poll card for dashboard/my-polls
+│   │   │   ├── PollStatusControl.tsx     # Status toggle (Active, Closed, Reopen modal)
+│   │   │   ├── ParticipantCounter.tsx    # Real-time Redis presence indicator
+│   │   │   ├── LiveAnalyticsCards.tsx    # 4-card metric dashboard
+│   │   │   ├── VotingTimelineChart.tsx   # Velocity & cumulative timeline area chart
 │   │   │   ├── ResultsChart.tsx          # Recharts multi-view chart for live results
 │   │   │   ├── SplashScreen.tsx          # Animated intro: SVG ring logo assembles on load
 │   │   │   └── SplashScreen.css          # Splash keyframe animations
 │   │   ├── context/
 │   │   │   └── AuthContext.tsx            # JWT + user state, localStorage session management
 │   │   ├── hooks/
-│   │   │   └── useWebSocket.ts            # Auto-reconnecting WebSocket hook
+│   │   │   ├── useWebSocket.ts            # Auto-reconnecting WebSocket hook with presence/status
+│   │   │   └── useCountdown.ts            # High-precision poll expiry countdown
 │   │   ├── pages/
 │   │   │   ├── LandingPage.tsx            # SaaS-style hero, features grid, use-cases, CTA
 │   │   │   ├── LoginPage.tsx              # Email + password login form
@@ -245,7 +255,9 @@ quorum/
 | `GET`    | `/api/polls`                | JWT   | List the authenticated user's polls   |
 | `POST`   | `/api/polls`                | JWT   | Create a new poll                     |
 | `PATCH`  | `/api/polls/:id/close`      | JWT   | Close a poll (owner only)             |
+| `PATCH`  | `/api/polls/:id/open`       | JWT   | Reopen or open a poll (owner only)    |
 | `DELETE` | `/api/polls/:id`            | JWT   | Delete a poll (owner only)            |
+| `GET`    | `/api/polls/:id/timeline`   | No    | Chronological voting velocity dataset |
 | `GET`    | `/api/dashboard`            | JWT   | Dashboard stats (totals, active count)|
 | `GET`    | `/ws/polls/:id`             | No    | WebSocket upgrade for live results    |
 | `GET`    | `/health`                   | No    | Health check                          |
@@ -321,6 +333,18 @@ Full-screen modal displayed from the Poll Share page and Poll Detail page:
 
 ### `ResultsChart.tsx`
 Multi-view chart supporting Columns (Vertical Bar), Bars (Horizontal Bar), and Donut Chart, complete with Leader Spotlight Banner and ranked breakdown cards with medals.
+
+### `ParticipantCounter.tsx`
+Audience presence indicator displaying real-time live viewers, completed voters, and passive observers backed by Redis presence counters and WebSocket lifecycle.
+
+### `LiveAnalyticsCards.tsx`
+Linear and Vercel inspired four-metric analytics grid showing Total Votes, Live Viewers, Turnout Rate %, and Leading Option or Status with trend styling.
+
+### `VotingTimelineChart.tsx`
+Interactive Recharts gradient AreaChart tracking vote velocity per minute and cumulative curve progression with live sync.
+
+### `PollStatusControl.tsx`
+Interactive control panel for poll owners to close active polls or reopen closed or expired polls with custom expiry duration.
 
 ### `PollCard.tsx`
 Reusable card component used in Dashboard and My Polls. Shows title, status badge, vote count, and action buttons.
@@ -516,6 +540,11 @@ Vite automatically proxies `/api/*` → `http://localhost:8080` and `/ws/*` → 
 | PWA install (iOS Safari guide)  | ✅     |
 | Splash screen animation         | ✅     |
 | Auto-update via service worker  | ✅     |
+| Live participant counter (Redis)| ✅     |
+| Poll open / close / reopen ctrl | ✅     |
+| Live analytics dashboard cards  | ✅     |
+| Voting timeline activity chart  | ✅     |
+| Poll expiration countdown timer | ✅     |
 | Deployed to Vercel + Render     | ✅     |
 | GitHub auto-deploy (push→live)  | ✅     |
 

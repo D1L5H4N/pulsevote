@@ -1,4 +1,4 @@
-package websocket
+﻿package websocket
 
 import (
 	"net/http"
@@ -37,7 +37,7 @@ func NewHandler(hub *Hub) *Handler {
 //   - The writePump goroutine forwards Redis Pub/Sub messages to the client
 //   - The readPump goroutine handles pongs and detects disconnects
 //
-// No authentication is required — anyone with the poll link can watch results.
+// No authentication is required - anyone with the poll link can watch results.
 func (h *Handler) ServeWS(c *gin.Context) {
 	pollID := c.Param("id")
 	if pollID == "" {

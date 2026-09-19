@@ -50,11 +50,22 @@ export interface OptionResult {
 }
 
 export interface ResultsResponse {
+  type?: string
   poll_id: string
   question: string
   status: 'active' | 'closed' | 'expired'
   results: OptionResult[]
   total_votes: number
+  expires_at?: string
+  total_viewers?: number
+  active_participants?: number
+  observing?: number
+}
+
+export interface TimelinePoint {
+  timestamp: string
+  votes: number
+  cumulative: number
 }
 
 export interface DashboardStats {
@@ -93,6 +104,9 @@ export const pollApi = {
   close: (id: string) =>
     api.patch(`/api/polls/${id}/close`),
 
+  open: (id: string, expires_at?: string | null) =>
+    api.patch(`/api/polls/${id}/open`, expires_at !== undefined ? { expires_at } : {}),
+
   delete: (id: string) =>
     api.delete(`/api/polls/${id}`),
 
@@ -107,6 +121,9 @@ export const voteApi = {
 
   getResults: (pollId: string) =>
     api.get<ResultsResponse>(`/api/polls/${pollId}/results`),
+
+  getTimeline: (pollId: string) =>
+    api.get<TimelinePoint[]>(`/api/polls/${pollId}/timeline`),
 }
 
 export default api

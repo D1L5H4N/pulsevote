@@ -82,6 +82,21 @@ func (r *Repository) UpdateStatus(ctx context.Context, id primitive.ObjectID, st
 	return err
 }
 
+// UpdateStatusAndExpiry atomically updates the poll status, optional expires_at, and updated_at.
+func (r *Repository) UpdateStatusAndExpiry(ctx context.Context, id primitive.ObjectID, status PollStatus, expiresAt *time.Time) error {
+	update := bson.M{
+		"status":     status,
+		"updated_at": time.Now().UTC(),
+		"expires_at": expiresAt,
+	}
+	_, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{"_id": id},
+		bson.M{"$set": update},
+	)
+	return err
+}
+
 // Delete removes a poll document.
 // Ownership validation must be performed before calling this method.
 func (r *Repository) Delete(ctx context.Context, id primitive.ObjectID) error {

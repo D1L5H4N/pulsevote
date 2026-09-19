@@ -1,4 +1,4 @@
-// Package routes wires together all handlers, middleware, and the Gin engine.
+﻿// Package routes wires together all handlers, middleware, and the Gin engine.
 // Centralising route registration here makes it easy to audit all API endpoints.
 package routes
 
@@ -32,7 +32,7 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 
 	// --- Services (business logic layer) ---
 	authService := auth.NewService(authRepo, cfg.JWTSecret)
-	pollService := poll.NewService(pollRepo)
+	pollService := poll.NewService(pollRepo, redisClient)
 	voteService := vote.NewService(voteRepo, pollRepo, redisClient)
 
 	// --- Handlers (HTTP layer) ---
@@ -68,7 +68,7 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Health check — used by Render for deployment health validation
+	// Health check - used by Render for deployment health validation
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok", "service": "quorum-backend"})
 	})
@@ -83,10 +83,11 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 			authRoutes.POST("/login", authHandler.Login)
 		}
 
-		// Poll read & vote (public — shared poll links work without login)
+		// Poll read & vote (public - shared poll links work without login)
 		api.GET("/polls/:id", pollHandler.GetByID)
 		api.POST("/polls/:id/vote", voteHandler.Vote)
 		api.GET("/polls/:id/results", voteHandler.GetResults)
+		api.GET("/polls/:id/timeline", voteHandler.GetTimeline)
 	}
 
 	// --- Authenticated API routes ---
@@ -96,11 +97,12 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 		protected.GET("/polls", pollHandler.ListByCreator)
 		protected.POST("/polls", pollHandler.Create)
 		protected.PATCH("/polls/:id/close", pollHandler.Close)
+		protected.PATCH("/polls/:id/open", pollHandler.Open)
 		protected.DELETE("/polls/:id", pollHandler.Delete)
 		protected.GET("/dashboard", pollHandler.GetDashboardStats)
 	}
 
-	// --- WebSocket endpoint (public — viewers don't need an account) ---
+	// --- WebSocket endpoint (public - viewers don't need an account) ---
 	r.GET("/ws/polls/:id", wsHandler.ServeWS)
 
 	return r

@@ -1,4 +1,4 @@
-package auth
+﻿package auth
 
 import (
 	"errors"
@@ -57,7 +57,7 @@ func (h *Handler) Login(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrInvalidCredentials):
-			// Use 401 for auth failures — never reveal whether the email exists
+			// Use 401 for auth failures - never reveal whether the email exists
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "login failed, please try again"})

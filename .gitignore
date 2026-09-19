@@ -9,7 +9,7 @@ frontend/node_modules/
 frontend/dist/
 frontend/.pnpm-store/
 
-# Go binaries only (NOT go.sum — that must be committed)
+# Go binaries only (NOT go.sum - that must be committed)
 *.exe
 *.exe~
 *.dll

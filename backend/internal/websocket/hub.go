@@ -1,8 +1,8 @@
-// Package websocket implements the real-time WebSocket hub backed by Redis Pub/Sub.
+﻿// Package websocket implements the real-time WebSocket hub backed by Redis Pub/Sub.
 //
 // Architecture:
 //
-//	Hub manages "rooms" — one room per poll ID.
+//	Hub manages "rooms" - one room per poll ID.
 //	Each room maintains a set of connected WebSocket clients.
 //	When the first client joins a room, a goroutine subscribes to the Redis
 //	Pub/Sub channel for that poll. All subsequent clients in the same room
@@ -94,7 +94,7 @@ func (h *Hub) addClient(client *Client) {
 
 	room, exists := h.rooms[client.pollID]
 	if !exists {
-		// First client in this poll room — start a Redis subscription goroutine
+		// First client in this poll room - start a Redis subscription goroutine
 		ctx, cancel := context.WithCancel(context.Background())
 		pubsub := redisutil.Subscribe(ctx, h.redisClient, client.pollID)
 
@@ -111,7 +111,15 @@ func (h *Hub) addClient(client *Client) {
 	}
 
 	room.clients[client] = true
-	log.Printf("[ws] client joined poll %s (total: %d)", client.pollID, len(room.clients))
+	viewerCount := int64(len(room.clients))
+	log.Printf("[ws] client joined poll %s (total: %d)", client.pollID, viewerCount)
+
+	// Update Redis presence counter and broadcast instantly
+	go func(pollID string, count int64) {
+		ctx := context.Background()
+		_ = h.redisClient.Set(ctx, redisutil.PresenceKey(pollID), count, 24*time.Hour).Err()
+		h.broadcastPresence(pollID, count)
+	}(client.pollID, viewerCount)
 }
 
 // removeClient removes a client from its room and tears down the room
@@ -130,13 +138,39 @@ func (h *Hub) removeClient(client *Client) {
 		close(client.send)
 	}
 
-	if len(room.clients) == 0 {
-		// Last client left — cancel the Redis subscription and clean up
+	remaining := int64(len(room.clients))
+	if remaining == 0 {
+		// Last client left - cancel the Redis subscription and clean up
 		room.cancel()
 		room.pubsub.Close()
 		delete(h.rooms, client.pollID)
 		log.Printf("[ws] room closed for poll %s (no clients remaining)", client.pollID)
+
+		// Clear Redis presence
+		go func(pollID string) {
+			_ = h.redisClient.Del(context.Background(), redisutil.PresenceKey(pollID)).Err()
+		}(client.pollID)
+	} else {
+		// Update Redis presence counter and broadcast new count
+		go func(pollID string, count int64) {
+			ctx := context.Background()
+			_ = h.redisClient.Set(ctx, redisutil.PresenceKey(pollID), count, 24*time.Hour).Err()
+			h.broadcastPresence(pollID, count)
+		}(client.pollID, remaining)
 	}
+}
+
+// broadcastPresence publishes real-time audience presence over the poll's channel.
+func (h *Hub) broadcastPresence(pollID string, viewers int64) {
+	if h.redisClient == nil {
+		return
+	}
+	payload := map[string]interface{}{
+		"type":          "presence",
+		"poll_id":       pollID,
+		"total_viewers": viewers,
+	}
+	_ = redisutil.Publish(context.Background(), h.redisClient, pollID, payload)
 }
 
 // listenAndBroadcast reads messages from the Redis Pub/Sub channel for a poll
@@ -153,9 +187,9 @@ func (h *Hub) listenAndBroadcast(pollID string, room *Room) {
 			select {
 			case client.send <- payload:
 			default:
-				// Client send buffer is full — they are likely disconnected.
+				// Client send buffer is full - they are likely disconnected.
 				// We do not close here; the unregister channel handles cleanup.
-				log.Printf("[ws] client send buffer full for poll %s — dropping message", pollID)
+				log.Printf("[ws] client send buffer full for poll %s - dropping message", pollID)
 			}
 		}
 		h.mu.RUnlock()
@@ -187,7 +221,7 @@ func (c *Client) writePump() {
 		case message, ok := <-c.send:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
-				// Hub closed the channel — send a close frame
+				// Hub closed the channel - send a close frame
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
@@ -221,7 +255,7 @@ func (c *Client) readPump() {
 	})
 
 	for {
-		// We discard any incoming messages — the WebSocket is server-push only.
+		// We discard any incoming messages - the WebSocket is server-push only.
 		if _, _, err := c.conn.ReadMessage(); err != nil {
 			break
 		}

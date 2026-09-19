@@ -1,4 +1,4 @@
-// Package vote — fingerprint.go
+﻿// Package vote - fingerprint.go
 //
 // Voter fingerprinting is extracted into its own file to make the logic
 // easy to find, review, and replace independently of the vote service.

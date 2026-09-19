@@ -3,7 +3,8 @@ import { ResultsResponse } from '../services/api'
 
 interface UseWebSocketOptions {
   pollId: string
-  onMessage: (data: ResultsResponse) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onMessage: (data: any) => void
   enabled?: boolean
 }
 

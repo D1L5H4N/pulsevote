@@ -81,3 +81,20 @@ func (h *Handler) GetResults(c *gin.Context) {
 
 	c.JSON(http.StatusOK, results)
 }
+
+// GetTimeline handles GET /api/polls/:id/timeline
+func (h *Handler) GetTimeline(c *gin.Context) {
+	pollID := c.Param("id")
+
+	timeline, err := h.service.GetTimeline(c.Request.Context(), pollID)
+	if err != nil {
+		if errors.Is(err, poll.ErrPollNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch timeline"})
+		return
+	}
+
+	c.JSON(http.StatusOK, timeline)
+}

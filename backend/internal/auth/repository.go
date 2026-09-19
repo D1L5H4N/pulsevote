@@ -1,4 +1,4 @@
-package auth
+﻿package auth
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 )
 
 // Repository handles all MongoDB operations in the auth domain.
-// It does not contain business logic — that lives in the Service.
+// It does not contain business logic - that lives in the Service.
 type Repository struct {
 	collection *mongo.Collection
 }
@@ -30,7 +30,7 @@ func NewRepository(db *mongo.Database) *Repository {
 		Keys:    bson.D{{Key: "email", Value: 1}},
 		Options: options.Index().SetUnique(true),
 	}
-	// CreateOne is idempotent — safe to call on every restart
+	// CreateOne is idempotent - safe to call on every restart
 	if _, err := coll.Indexes().CreateOne(ctx, indexModel); err != nil {
 		// Non-fatal: index may already exist
 		_ = err

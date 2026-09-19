@@ -71,11 +71,20 @@ type PollResponse struct {
 // ResultsResponse represents the computed vote tallies for a poll.
 // It is the payload both returned by the REST API and broadcast over WebSocket.
 type ResultsResponse struct {
-	PollID   string         `json:"poll_id"`
-	Question string         `json:"question"`
-	Status   PollStatus     `json:"status"`
-	Results  []OptionResult `json:"results"`
-	Total    int64          `json:"total_votes"`
+	PollID             string         `json:"poll_id"`
+	Question           string         `json:"question"`
+	Status             PollStatus     `json:"status"`
+	Results            []OptionResult `json:"results"`
+	Total              int64          `json:"total_votes"`
+	ExpiresAt          *time.Time     `json:"expires_at,omitempty"`
+	TotalViewers       int64          `json:"total_viewers"`
+	ActiveParticipants int64          `json:"active_participants"`
+	Observing          int64          `json:"observing"`
+}
+
+// ReopenPollRequest allows setting an optional new expiration time when reopening a poll.
+type ReopenPollRequest struct {
+	ExpiresAt *time.Time `json:"expires_at"`
 }
 
 // OptionResult holds the tally for a single poll option.

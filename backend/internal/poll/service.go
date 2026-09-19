@@ -1,4 +1,4 @@
-package poll
+﻿package poll
 
 import (
 	"context"
@@ -6,8 +6,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	goredis "github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	redisutil "github.com/pulsevote/backend/internal/redis"
 )
 
 // Sentinel errors for type-safe error handling by callers.
@@ -22,18 +26,19 @@ var (
 // Service contains all poll business logic.
 // It depends on Repository for persistence and does not touch HTTP concerns.
 type Service struct {
-	repo *Repository
+	repo  *Repository
+	redis *goredis.Client
 }
 
 // NewService constructs a poll Service.
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+func NewService(repo *Repository, redis *goredis.Client) *Service {
+	return &Service{repo: repo, redis: redis}
 }
 
 // Create validates and persists a new poll.
 //
 // Ownership is established from the JWT-extracted creatorID, never from the
-// request body — the client cannot forge ownership.
+// request body - the client cannot forge ownership.
 func (s *Service) Create(ctx context.Context, creatorID string, req *CreatePollRequest) (*Poll, error) {
 	// Validate unique options before any DB call (cheap CPU operation first)
 	if err := validateUniqueOptions(req.Options); err != nil {
@@ -60,6 +65,11 @@ func (s *Service) Create(ctx context.Context, creatorID string, req *CreatePollR
 	if err := s.repo.Create(ctx, p); err != nil {
 		return nil, err
 	}
+
+	if p.ExpiresAt != nil {
+		s.scheduleAutoExpire(p.ID.Hex(), *p.ExpiresAt)
+	}
+
 	return p, nil
 }
 
@@ -115,7 +125,46 @@ func (s *Service) Close(ctx context.Context, pollID, requestingUserID string) er
 		return ErrNotOwner
 	}
 	oid, _ := primitive.ObjectIDFromHex(pollID)
-	return s.repo.UpdateStatus(ctx, oid, StatusClosed)
+	if err := s.repo.UpdateStatus(ctx, oid, StatusClosed); err != nil {
+		return err
+	}
+
+	// Broadcast status change to all connected WebSocket clients
+	s.broadcastPollStatus(pollID, StatusClosed, p.ExpiresAt)
+	return nil
+}
+
+// Open allows only the creator to open or reopen their poll, optionally updating the expiry.
+func (s *Service) Open(ctx context.Context, pollID, requestingUserID string, newExpiresAt *time.Time) error {
+	p, err := s.GetByID(ctx, pollID)
+	if err != nil {
+		return err
+	}
+	if p.CreatorID.Hex() != requestingUserID {
+		return ErrNotOwner
+	}
+
+	if newExpiresAt != nil && newExpiresAt.Before(time.Now().UTC()) {
+		return ErrExpiredTime
+	}
+
+	oid, _ := primitive.ObjectIDFromHex(pollID)
+	if err := s.repo.UpdateStatusAndExpiry(ctx, oid, StatusActive, newExpiresAt); err != nil {
+		return err
+	}
+
+	p.Status = StatusActive
+	p.ExpiresAt = newExpiresAt
+
+	// Broadcast status change to all connected WebSocket clients
+	s.broadcastPollStatus(pollID, StatusActive, newExpiresAt)
+
+	// If new expiry is in the future, schedule auto-expiration
+	if newExpiresAt != nil {
+		s.scheduleAutoExpire(pollID, *newExpiresAt)
+	}
+
+	return nil
 }
 
 // Delete removes a poll, enforcing that only the creator may do so.
@@ -169,8 +218,54 @@ func (s *Service) GetDashboardStats(ctx context.Context, creatorID string) (map[
 func (s *Service) lazyExpire(p *Poll) {
 	if p.Status == StatusActive && p.ExpiresAt != nil && time.Now().UTC().After(*p.ExpiresAt) {
 		p.Status = StatusExpired
-		go s.repo.UpdateStatus(context.Background(), p.ID, StatusExpired)
+		go func() {
+			_ = s.repo.UpdateStatus(context.Background(), p.ID, StatusExpired)
+			s.broadcastPollStatus(p.ID.Hex(), StatusExpired, p.ExpiresAt)
+		}()
 	}
+}
+
+// broadcastPollStatus sends a real-time status update to the poll's Redis channel.
+func (s *Service) broadcastPollStatus(pollID string, status PollStatus, expiresAt *time.Time) {
+	if s.redis == nil {
+		return
+	}
+	payload := gin.H{
+		"type":       "status_change",
+		"poll_id":    pollID,
+		"status":     status,
+		"expires_at": expiresAt,
+	}
+	go func() {
+		_ = redisutil.Publish(context.Background(), s.redis, pollID, payload)
+	}()
+}
+
+// scheduleAutoExpire starts a goroutine timer to expire a poll when its deadline arrives.
+func (s *Service) scheduleAutoExpire(pollID string, expiresAt time.Time) {
+	duration := time.Until(expiresAt)
+	if duration <= 0 {
+		return
+	}
+	go func() {
+		timer := time.NewTimer(duration)
+		defer timer.Stop()
+		<-timer.C
+
+		ctx := context.Background()
+		oid, err := primitive.ObjectIDFromHex(pollID)
+		if err != nil {
+			return
+		}
+
+		p, err := s.repo.FindByID(ctx, oid)
+		if err != nil || p.Status != StatusActive {
+			return
+		}
+
+		_ = s.repo.UpdateStatus(ctx, oid, StatusExpired)
+		s.broadcastPollStatus(pollID, StatusExpired, p.ExpiresAt)
+	}()
 }
 
 // --- private helpers ---

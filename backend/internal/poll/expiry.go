@@ -1,4 +1,4 @@
-// Package poll — expiry.go
+﻿// Package poll - expiry.go
 //
 // Poll expiration logic is isolated here to keep it easy to find
 // and to separate it from CRUD concerns in service.go.
@@ -12,7 +12,7 @@ import (
 // ExpiryChecker is responsible for evaluating and persisting the expired
 // status of polls whose deadline has passed.
 //
-// Design — lazy expiration:
+// Design - lazy expiration:
 //
 //	Rather than running a background cron that scans all polls periodically,
 //	we evaluate expiry the first time a poll is fetched after its deadline.
@@ -22,7 +22,7 @@ import (
 //	  - Avoids thundering-herd problems from bulk status updates
 //
 //	The trade-off: a poll appears "active" in the database until it is fetched.
-//	For a polling platform this is acceptable — the poll creator or a voter
+//	For a polling platform this is acceptable - the poll creator or a voter
 //	will fetch the poll before the status matters.
 type ExpiryChecker struct {
 	repo *Repository
@@ -53,7 +53,7 @@ func (e *ExpiryChecker) CheckAndExpire(p *Poll) bool {
 	// Update in-memory status synchronously (request sees correct state)
 	p.Status = StatusExpired
 
-	// Persist asynchronously — a goroutine is cheap and this path is non-critical
+	// Persist asynchronously - a goroutine is cheap and this path is non-critical
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()

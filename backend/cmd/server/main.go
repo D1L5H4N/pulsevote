@@ -1,4 +1,4 @@
-// Package main is the entry point for the PulseVote backend server.
+﻿// Package main is the entry point for the PulseVote backend server.
 // It initialises all external connections, builds the Gin router, and
 // manages graceful shutdown to avoid dropping in-flight requests.
 package main
@@ -22,7 +22,7 @@ func main() {
 	// Load and validate configuration from environment variables
 	cfg := configs.Load()
 
-	// Initialise MongoDB — fail fast if unavailable at startup
+	// Initialise MongoDB - fail fast if unavailable at startup
 	mongoClient, err := mongoconn.Connect(cfg.MongoURI)
 	if err != nil {
 		log.Fatalf("[main] MongoDB connection failed: %v", err)
@@ -36,7 +36,7 @@ func main() {
 		log.Println("[main] MongoDB disconnected cleanly")
 	}()
 
-	// Initialise Redis — fail fast if unavailable at startup
+	// Initialise Redis - fail fast if unavailable at startup
 	redisClient, err := redisconn.Connect(cfg.RedisURL, cfg.RedisPassword)
 	if err != nil {
 		log.Fatalf("[main] Redis connection failed: %v", err)
@@ -74,7 +74,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("[main] Shutdown signal received — draining connections...")
+	log.Println("[main] Shutdown signal received - draining connections...")
 
 	// Give in-flight requests up to 30 seconds to complete
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

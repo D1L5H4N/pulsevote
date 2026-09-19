@@ -1,4 +1,4 @@
-// Package configs handles loading and validating all application configuration
+﻿// Package configs handles loading and validating all application configuration
 // from environment variables. This centralizes config management so that other
 // packages can receive a *Config via dependency injection rather than calling
 // os.Getenv directly, making the codebase more testable.
@@ -28,9 +28,9 @@ type Config struct {
 // In production (Render), environment variables are injected by the platform
 // so the .env file is not required and its absence is not an error.
 func Load() *Config {
-	// Attempt .env load — silently ignored in production environments
+	// Attempt .env load - silently ignored in production environments
 	if err := godotenv.Load(); err != nil {
-		log.Println("[config] No .env file found — reading from system environment")
+		log.Println("[config] No .env file found - reading from system environment")
 	}
 
 	cfg := &Config{

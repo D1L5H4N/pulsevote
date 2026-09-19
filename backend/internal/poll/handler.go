@@ -1,4 +1,4 @@
-package poll
+﻿package poll
 
 import (
 	"errors"
@@ -25,7 +25,7 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	// CreatorID comes from the JWT middleware — never from the request body
+	// CreatorID comes from the JWT middleware - never from the request body
 	creatorID := c.GetString("userID")
 
 	p, err := h.service.Create(c.Request.Context(), creatorID, &req)
@@ -87,6 +87,28 @@ func (h *Handler) Close(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "poll closed successfully"})
+}
+
+// Open handles PATCH /api/polls/:id/open  (authenticated, owner only)
+func (h *Handler) Open(c *gin.Context) {
+	userID := c.GetString("userID")
+	var req ReopenPollRequest
+	_ = c.ShouldBindJSON(&req)
+
+	if err := h.service.Open(c.Request.Context(), c.Param("id"), userID, req.ExpiresAt); err != nil {
+		switch {
+		case errors.Is(err, ErrPollNotFound):
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		case errors.Is(err, ErrNotOwner):
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		case errors.Is(err, ErrExpiredTime):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to open poll"})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "poll opened successfully"})
 }
 
 // Delete handles DELETE /api/polls/:id  (authenticated, owner only)
