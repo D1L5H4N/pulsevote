@@ -17,70 +17,89 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-900/60 to-purple-950/80 border border-violet-500/30 overflow-hidden shadow-lg shadow-violet-900/40 group-hover:border-violet-400 transition-all flex items-center justify-center p-1.5">
-              <img
-                src="/quorum-icon.png"
-                alt="Quorum"
-                className="w-full h-full object-contain rounded-xl"
-              />
-            </div>
-            <span className="font-extrabold text-2xl text-white tracking-tight">
-              Quorum
-            </span>
-          </Link>
+          {/* Logo Section */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center gap-4 group focus:outline-none">
+              <div className="w-8 h-8 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shrink-0 group-hover:border-violet-400/60 transition-colors">
+                <img
+                  src="/quorum-icon.png"
+                  alt="Quorum Logo"
+                  className="w-5 h-5 object-contain"
+                />
+              </div>
+              <span className="font-bold text-xl text-white tracking-tight leading-none">
+                Quorum
+              </span>
+            </Link>
+          </div>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-2">
-            <InstallPwaButton className="mr-1" />
+          {/* Navigation Section (Equal spacing, gap: 40px) */}
+          <nav className="hidden md:flex items-center gap-10">
+            <Link
+              to="/dashboard"
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-2"
+            >
+              <LayoutDashboard size={15} />
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              to="/my-polls"
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-2"
+            >
+              <BarChart3 size={15} />
+              <span>My Polls</span>
+            </Link>
+          </nav>
+
+          {/* Actions & User Section (32px gap between CTA and User Section) */}
+          <div className="hidden md:flex items-center gap-8">
+            <InstallPwaButton className="!h-9 !py-0" />
 
             {user ? (
               <>
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
-                >
-                  <LayoutDashboard size={15} />
-                  Dashboard
-                </Link>
-                <Link
-                  to="/my-polls"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
-                >
-                  <BarChart3 size={15} />
-                  My Polls
-                </Link>
+                {/* CTA Button */}
                 <Link
                   to="/polls/create"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm bg-violet-600 hover:bg-violet-500 text-white transition-all font-medium"
+                  className="h-9 inline-flex items-center gap-2 px-4 rounded-lg text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white shadow-sm transition-all"
                 >
                   <PlusCircle size={15} />
-                  Create Poll
+                  <span>Create Poll</span>
                 </Link>
-                <div className="h-6 w-px bg-slate-800 mx-1" />
-                <span className="text-sm text-slate-400">Hi, {user.name.split(' ')[0]}</span>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-                >
-                  <LogOut size={15} />
-                  Logout
-                </button>
+
+                {/* User Section: Hi, {name} | Logout */}
+                <div className="flex items-center gap-3 text-sm text-slate-400">
+                  <span className="text-slate-300 font-medium">
+                    Hi, {user.name.split(' ')[0]}
+                  </span>
+                  <span className="text-slate-700">|</span>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 transition-colors"
+                  >
+                    <LogOut size={14} />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </>
             ) : (
-              <>
-                <Link to="/login" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors">
+              <div className="flex items-center gap-4">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                >
                   Login
                 </Link>
-                <Link to="/register" className="btn-primary !py-2 !px-5 !text-sm">
+                <Link
+                  to="/register"
+                  className="h-9 inline-flex items-center px-4 rounded-lg text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-all shadow-sm"
+                >
                   Get Started
                 </Link>
-              </>
+              </div>
             )}
-          </nav>
+          </div>
 
           {/* Mobile menu toggle & Install button */}
           <div className="md:hidden flex items-center gap-2">

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
-import { Activity, TrendingUp, Clock, RefreshCw } from 'lucide-react'
+import { Activity, TrendingUp, Clock } from 'lucide-react'
 import { voteApi, TimelinePoint } from '../services/api'
 
 interface Props {
@@ -91,7 +91,7 @@ export default function VotingTimelineChart({ pollId, refreshTrigger = 0, classN
   return (
     <div className={`rounded-xl p-6 bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm h-full min-h-[380px] flex flex-col justify-between ${className}`}>
       {/* Header & Controls */}
-      <div className="flex items-center justify-between gap-3 mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 mb-6">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-lg bg-violet-500/15 flex items-center justify-center text-violet-400 shrink-0">
             <TrendingUp size={16} />
@@ -99,49 +99,38 @@ export default function VotingTimelineChart({ pollId, refreshTrigger = 0, classN
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-white text-sm whitespace-nowrap tracking-tight">Activity Timeline</h3>
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Live
               </span>
             </div>
-            <p className="text-xs text-slate-400 truncate">Minute-by-minute vote stream</p>
+            <p className="text-xs text-slate-400 truncate mt-0.5">Minute-by-minute vote stream</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Mode Switcher */}
-          <div className="h-8 inline-flex items-center gap-0.5 rounded-lg bg-slate-950/80 p-0.5 border border-slate-800 text-[11px]">
-            <button
-              type="button"
-              onClick={() => setViewMode('cumulative')}
-              className={`h-7 px-2.5 rounded-md font-medium transition-all ${
-                viewMode === 'cumulative'
-                  ? 'bg-violet-600 text-white shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Cumulative
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('interval')}
-              className={`h-7 px-2.5 rounded-md font-medium transition-all ${
-                viewMode === 'interval'
-                  ? 'bg-violet-600 text-white shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Velocity
-            </button>
-          </div>
-
+        {/* Mode Switcher */}
+        <div className="h-8 inline-flex items-center gap-0.5 rounded-lg bg-slate-950/80 p-0.5 border border-slate-800 text-[11px] shrink-0 ml-auto">
           <button
             type="button"
-            onClick={fetchTimeline}
-            className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-800 border border-slate-800 transition-colors"
-            title="Refresh timeline data"
+            onClick={() => setViewMode('cumulative')}
+            className={`h-7 px-2.5 rounded-md font-medium transition-all ${
+              viewMode === 'cumulative'
+                ? 'bg-violet-600 text-white shadow-sm font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
           >
-            <RefreshCw size={13} />
+            Cumulative
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('interval')}
+            className={`h-7 px-2.5 rounded-md font-medium transition-all ${
+              viewMode === 'interval'
+                ? 'bg-violet-600 text-white shadow-sm font-semibold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Velocity
           </button>
         </div>
       </div>
