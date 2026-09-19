@@ -12,7 +12,6 @@ import {
   BarChart3,
   ExternalLink,
   ChevronDown,
-  RefreshCw,
   SlidersHorizontal,
 } from 'lucide-react'
 
@@ -211,19 +210,9 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-5 pb-6 border-b border-slate-800/80">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                Quorum Dashboard
-              </h1>
-              <button
-                onClick={() => loadDashboard()}
-                disabled={refreshing}
-                className="text-slate-500 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
-                title="Refresh telemetry"
-              >
-                <RefreshCw size={15} className={refreshing ? 'animate-spin text-violet-400' : ''} />
-              </button>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Quorum Dashboard
+            </h1>
             <p className="text-xs text-slate-400 mt-1">
               Welcome back, {user?.name.split(' ')[0]} • Real-time telemetry and engagement overview
             </p>
