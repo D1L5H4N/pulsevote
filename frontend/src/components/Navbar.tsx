@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, LogOut, Menu, X, BarChart3 } from 'lucide-react'
+import { LayoutGrid, BarChart2, PlusCircle, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import InstallPwaButton from './InstallPwaButton'
@@ -21,7 +21,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-4 group focus:outline-none">
+            <Link to="/" className="flex items-center gap-3.5 group focus:outline-none">
               <div className="w-8 h-8 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shrink-0 group-hover:border-violet-400/60 transition-colors">
                 <img
                   src="/quorum-icon.png"
@@ -35,53 +35,53 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Navigation Section (Equal spacing, gap: 40px) */}
-          <nav className="hidden md:flex items-center gap-10">
-            <Link
-              to="/dashboard"
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-2"
-            >
-              <LayoutDashboard size={15} />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              to="/my-polls"
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors flex items-center gap-2"
-            >
-              <BarChart3 size={15} />
-              <span>My Polls</span>
-            </Link>
-          </nav>
-
-          {/* Actions & User Section (32px gap between CTA and User Section) */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation & Actions matching exact user design */}
+          <div className="hidden md:flex items-center gap-6 lg:gap-7">
             <InstallPwaButton className="!h-9 !py-0" />
 
             {user ? (
               <>
-                {/* CTA Button */}
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                >
+                  <LayoutGrid size={16} className="text-slate-400" />
+                  <span>Dashboard</span>
+                </Link>
+
+                <Link
+                  to="/my-polls"
+                  className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                >
+                  <BarChart2 size={16} className="text-slate-400" />
+                  <span>My Polls</span>
+                </Link>
+
+                {/* Create Poll Button */}
                 <Link
                   to="/polls/create"
-                  className="h-9 inline-flex items-center gap-2 px-4 rounded-lg text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white shadow-sm transition-all"
+                  className="h-10 inline-flex items-center gap-2 px-5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-600/25 hover:shadow-violet-600/40 transition-all"
                 >
-                  <PlusCircle size={15} />
+                  <PlusCircle size={17} className="stroke-[2.2]" />
                   <span>Create Poll</span>
                 </Link>
 
-                {/* User Section: Hi, {name} | Logout */}
-                <div className="flex items-center gap-3 text-sm text-slate-400">
-                  <span className="text-slate-300 font-medium">
-                    Hi, {user.name.split(' ')[0]}
-                  </span>
-                  <span className="text-slate-700">|</span>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 transition-colors"
-                  >
-                    <LogOut size={14} />
-                    <span>Logout</span>
-                  </button>
-                </div>
+                {/* Subtle Divider */}
+                <div className="h-5 w-px bg-slate-800/80 mx-1" />
+
+                {/* User Greeting */}
+                <span className="text-sm font-medium text-slate-300">
+                  Hi, {user.name.split(' ')[0]}
+                </span>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+                >
+                  <LogOut size={16} className="text-slate-400" />
+                  <span>Logout</span>
+                </button>
               </>
             ) : (
               <div className="flex items-center gap-4">
@@ -121,31 +121,48 @@ export default function Navbar() {
             </div>
             {user ? (
               <>
-                <Link to="/dashboard" onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
-                  <LayoutDashboard size={16} /> Dashboard
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all"
+                >
+                  <LayoutGrid size={16} /> Dashboard
                 </Link>
-                <Link to="/my-polls" onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
-                  <BarChart3 size={16} /> My Polls
+                <Link
+                  to="/my-polls"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all"
+                >
+                  <BarChart2 size={16} /> My Polls
                 </Link>
-                <Link to="/polls/create" onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all">
+                <Link
+                  to="/polls/create"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all"
+                >
                   <PlusCircle size={16} /> Create Poll
                 </Link>
-                <button onClick={handleLogout}
-                  className="flex w-full items-center gap-2 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all">
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
+                >
                   <LogOut size={16} /> Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all">
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-all"
+                >
                   Login
                 </Link>
-                <Link to="/register" onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all">
+                <Link
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-3 rounded-lg text-violet-400 hover:bg-violet-500/10 transition-all"
+                >
                   Register
                 </Link>
               </>
