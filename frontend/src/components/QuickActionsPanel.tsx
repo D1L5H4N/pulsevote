@@ -17,11 +17,11 @@ export default function QuickActionsPanel({
   hasActivePolls = false,
 }: QuickActionsPanelProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2.5">
       <Link
         to="/polls/create"
         id="create-poll-btn"
-        className="btn-primary flex items-center gap-1.5 text-xs py-2 px-3.5 shadow-lg shadow-violet-600/20"
+        className="h-9 inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-md shadow-violet-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
         <PlusCircle size={14} />
         <span>Create Poll</span>
@@ -30,7 +30,7 @@ export default function QuickActionsPanel({
       <button
         onClick={onOpenTemplates}
         id="templates-btn"
-        className="flex items-center gap-1.5 text-xs font-medium text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 rounded-lg py-2 px-3 transition-colors"
+        className="h-9 inline-flex items-center gap-1.5 text-xs font-medium text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 rounded-lg px-3 transition-colors"
       >
         <Sparkles size={14} className="text-violet-400" />
         <span>Use Template</span>
@@ -39,7 +39,7 @@ export default function QuickActionsPanel({
       {onQuickShare && (
         <button
           onClick={onQuickShare}
-          className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-2 px-3 transition-colors"
+          className="h-9 hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 rounded-lg px-3 transition-colors"
           title="Share latest active poll"
         >
           <Share2 size={14} className="text-slate-400" />
@@ -50,7 +50,7 @@ export default function QuickActionsPanel({
       {onQuickDuplicate && (
         <button
           onClick={onQuickDuplicate}
-          className="hidden md:flex items-center gap-1.5 text-xs font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-2 px-3 transition-colors"
+          className="h-9 hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 rounded-lg px-3 transition-colors"
           title="Duplicate most recent poll"
         >
           <Copy size={14} className="text-slate-400" />
@@ -61,7 +61,7 @@ export default function QuickActionsPanel({
       {onQuickClose && hasActivePolls && (
         <button
           onClick={onQuickClose}
-          className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg py-2 px-3 transition-colors"
+          className="h-9 hidden lg:inline-flex items-center gap-1.5 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg px-3 transition-colors"
           title="Quickly close active poll"
         >
           <StopCircle size={14} />
@@ -71,7 +71,7 @@ export default function QuickActionsPanel({
 
       <Link
         to="/my-polls"
-        className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white bg-slate-900/50 hover:bg-slate-800 border border-slate-800/80 rounded-lg py-2 px-3 transition-colors"
+        className="h-9 inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800/80 rounded-lg px-3 transition-colors"
       >
         <BarChart2 size={14} />
         <span>Manage All</span>

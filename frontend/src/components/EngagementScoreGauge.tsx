@@ -27,18 +27,18 @@ export default function EngagementScoreGauge({
   const strokeDashoffset = circumference - (cleanScore / 100) * circumference
 
   return (
-    <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-5 backdrop-blur-sm flex flex-col justify-between">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-violet-500/15 flex items-center justify-center text-violet-400">
+    <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-sm flex flex-col justify-between h-full min-h-[380px]">
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-violet-500/15 flex items-center justify-center text-violet-400 shrink-0">
             <Sparkles size={16} />
           </div>
           <div>
-            <h3 className="font-semibold text-white text-sm">Engagement Index</h3>
-            <p className="text-[11px] text-slate-500">Audience interaction score</p>
+            <h3 className="font-semibold text-white text-sm tracking-tight">Engagement Index</h3>
+            <p className="text-xs text-slate-400">Audience interaction score</p>
           </div>
         </div>
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${tier.bg} ${tier.color}`}>
+        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${tier.bg} ${tier.color} border border-current/20`}>
           {tier.label}
         </span>
       </div>

@@ -47,10 +47,10 @@ export default function ParticipantCounter({
   }
 
   return (
-    <div className={`grid grid-cols-3 gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-slate-900/70 border border-slate-800/80 shadow-inner backdrop-blur-sm ${className}`}>
+    <div className={`grid grid-cols-3 gap-2 sm:gap-2.5 p-2 rounded-xl bg-slate-900/80 border border-slate-800/80 shadow-sm backdrop-blur-sm shrink-0 ${className}`}>
       {/* Viewers */}
-      <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-800/40 border border-slate-700/30">
-        <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex-shrink-0">
+      <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/50 border border-slate-800/50">
+        <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 shrink-0">
           <Users size={14} />
           <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -58,30 +58,30 @@ export default function ParticipantCounter({
           </span>
         </div>
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold">Viewing</p>
-          <p className="text-xs sm:text-sm font-bold text-white truncate">{safeViewers.toLocaleString()}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Viewing</p>
+          <p className="text-xs sm:text-sm font-bold text-white font-mono truncate">{safeViewers.toLocaleString()}</p>
         </div>
       </div>
 
       {/* Voted */}
-      <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-800/40 border border-slate-700/30">
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-violet-500/15 text-violet-400 flex-shrink-0">
+      <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/50 border border-slate-800/50">
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-violet-500/15 text-violet-400 shrink-0">
           <CheckCircle2 size={14} />
         </div>
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold">Voted</p>
-          <p className="text-xs sm:text-sm font-bold text-violet-300 truncate">{safeVoted.toLocaleString()}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Voted</p>
+          <p className="text-xs sm:text-sm font-bold text-violet-300 font-mono truncate">{safeVoted.toLocaleString()}</p>
         </div>
       </div>
 
       {/* Observing */}
-      <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-800/40 border border-slate-700/30">
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-700/30 text-slate-400 flex-shrink-0">
+      <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-950/50 border border-slate-800/50">
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800/50 text-slate-400 shrink-0">
           <Eye size={14} />
         </div>
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold">Observing</p>
-          <p className="text-xs sm:text-sm font-bold text-slate-300 truncate">{safeObserving.toLocaleString()}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Observing</p>
+          <p className="text-xs sm:text-sm font-bold text-slate-300 font-mono truncate">{safeObserving.toLocaleString()}</p>
         </div>
       </div>
     </div>

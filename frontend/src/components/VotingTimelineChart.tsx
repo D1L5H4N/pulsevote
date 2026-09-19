@@ -89,55 +89,56 @@ export default function VotingTimelineChart({ pollId, refreshTrigger = 0, classN
   }
 
   return (
-    <div className={`rounded-2xl p-5 sm:p-6 bg-slate-900/80 border border-slate-800/80 shadow-xl backdrop-blur-sm ${className}`}>
+    <div className={`rounded-xl p-6 bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm h-full min-h-[380px] flex flex-col justify-between ${className}`}>
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <TrendingUp size={15} className="text-violet-400" />
-              Voting Activity Timeline
-            </h3>
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300 font-medium border border-violet-500/20">
-              Live Stream
-            </span>
+      <div className="flex items-center justify-between gap-3 mb-5">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-lg bg-violet-500/15 flex items-center justify-center text-violet-400 shrink-0">
+            <TrendingUp size={16} />
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Chronological aggregation of votes cast across minute intervals
-          </p>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-white text-sm whitespace-nowrap tracking-tight">Activity Timeline</h3>
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 truncate">Minute-by-minute vote stream</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Mode Switcher */}
-          <div className="inline-flex rounded-lg bg-slate-800/80 p-1 border border-slate-700/60">
+          <div className="h-8 inline-flex items-center gap-0.5 rounded-lg bg-slate-950/80 p-0.5 border border-slate-800 text-[11px]">
             <button
               type="button"
               onClick={() => setViewMode('cumulative')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+              className={`h-7 px-2.5 rounded-md font-medium transition-all ${
                 viewMode === 'cumulative'
-                  ? 'bg-violet-600 text-white shadow-sm'
+                  ? 'bg-violet-600 text-white shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Cumulative Growth
+              Cumulative
             </button>
             <button
               type="button"
               onClick={() => setViewMode('interval')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+              className={`h-7 px-2.5 rounded-md font-medium transition-all ${
                 viewMode === 'interval'
-                  ? 'bg-violet-600 text-white shadow-sm'
+                  ? 'bg-violet-600 text-white shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Velocity / min
+              Velocity
             </button>
           </div>
 
           <button
             type="button"
             onClick={fetchTimeline}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 transition-colors"
+            className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-800 border border-slate-800 transition-colors"
             title="Refresh timeline data"
           >
             <RefreshCw size={13} />
@@ -146,9 +147,9 @@ export default function VotingTimelineChart({ pollId, refreshTrigger = 0, classN
       </div>
 
       {/* Recharts Area Curve */}
-      <div className="w-full h-56 sm:h-64">
+      <div className="w-full flex-1 min-h-[220px] mt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={timeline} margin={{ top: 10, right: 12, left: -20, bottom: 5 }}>
+          <AreaChart data={timeline} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
             <defs>
               <linearGradient id="timelineGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.45} />

@@ -52,37 +52,39 @@ export default function DashboardStatsCards({ stats, liveViewers = 0 }: Dashboar
   ]
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
       {cards.map((card, idx) => (
         <div
           key={card.label}
-          className={`relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 p-4.5 backdrop-blur-sm transition-all duration-200 hover:border-slate-700/80 ${
-            idx === 4 ? 'col-span-2 lg:col-span-1' : ''
+          className={`relative overflow-hidden rounded-xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-sm transition-all duration-200 hover:border-slate-700/80 flex flex-col justify-between min-h-[144px] ${
+            idx === 4 ? 'col-span-2 sm:col-span-1 lg:col-span-1' : ''
           }`}
         >
           {/* Subtle top gradient accent */}
           <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${card.accentColor}`} />
 
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-400">{card.label}</span>
-            <div className={`w-8 h-8 rounded-lg ${card.bgIcon} flex items-center justify-center`}>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-medium text-slate-400 truncate">{card.label}</span>
+            <div className={`w-9 h-9 rounded-lg ${card.bgIcon} flex items-center justify-center shrink-0`}>
               {card.icon}
             </div>
           </div>
 
-          <div className="flex items-baseline gap-2">
-            <p className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              {card.value}
-            </p>
-            {card.isLive && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live
-              </span>
-            )}
-          </div>
+          <div>
+            <div className="flex items-baseline gap-2.5 min-h-[36px]">
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-mono">
+                {card.value}
+              </p>
+              {card.isLive && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Live
+                </span>
+              )}
+            </div>
 
-          <p className="text-xs text-slate-500 mt-1.5 truncate">{card.subtext}</p>
+            <p className="text-xs text-slate-400 mt-1.5 truncate">{card.subtext}</p>
+          </div>
         </div>
       ))}
     </div>

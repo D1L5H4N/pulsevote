@@ -180,16 +180,17 @@ export default function DashboardPage() {
 
   if (loading || !data) {
     return (
-      <div className="page-container space-y-6">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-8 py-8 space-y-8">
         <div className="skeleton h-12 w-1/3 rounded-xl" />
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="skeleton h-28 rounded-xl" />
+            <div key={i} className="skeleton h-32 rounded-xl" />
           ))}
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="skeleton h-64 rounded-xl lg:col-span-2" />
-          <div className="skeleton h-64 rounded-xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="skeleton h-80 rounded-xl lg:col-span-4" />
+          <div className="skeleton h-80 rounded-xl lg:col-span-4" />
+          <div className="skeleton h-80 rounded-xl lg:col-span-4" />
         </div>
       </div>
     )
@@ -198,7 +199,7 @@ export default function DashboardPage() {
   const latestActive = data.polls.find((p) => p.status === 'active')
 
   return (
-    <div className="page-container animate-fade-in space-y-6 pb-16">
+    <div className="max-w-[1440px] mx-auto px-6 sm:px-8 py-8 space-y-8 animate-fade-in pb-16">
       {/* Toast notification banner */}
       {actionNotice && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 bg-violet-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-2xl animate-fade-in">
@@ -207,27 +208,27 @@ export default function DashboardPage() {
       )}
 
       {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-800/80">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              SaaS Dashboard
-            </h1>
-            <button
-              onClick={() => loadDashboard()}
-              disabled={refreshing}
-              className="text-slate-500 hover:text-white p-1 rounded transition-colors"
-              title="Refresh telemetry"
-            >
-              <RefreshCw size={14} className={refreshing ? 'animate-spin text-violet-400' : ''} />
-            </button>
+      <div className="flex flex-col gap-5 pb-6 border-b border-slate-800/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                Quorum Dashboard
+              </h1>
+              <button
+                onClick={() => loadDashboard()}
+                disabled={refreshing}
+                className="text-slate-500 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+                title="Refresh telemetry"
+              >
+                <RefreshCw size={15} className={refreshing ? 'animate-spin text-violet-400' : ''} />
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              Welcome back, {user?.name.split(' ')[0]} • Real-time telemetry and engagement overview
+            </p>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Welcome back, {user?.name.split(' ')[0]} • Real-time telemetry and engagement overview
-          </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-3">
           {data.live_viewers > 0 && (
             <ParticipantCounter
               viewers={data.live_viewers}
@@ -235,6 +236,10 @@ export default function DashboardPage() {
               observing={Math.max(0, data.live_viewers - data.stats.total_votes)}
             />
           )}
+        </div>
+
+        {/* Quick Actions Row */}
+        <div className="flex items-center justify-between gap-3 pt-1">
           <QuickActionsPanel
             onOpenTemplates={() => setIsTemplatesOpen(true)}
             onQuickShare={latestActive ? () => setSharePoll(latestActive) : undefined}
@@ -249,26 +254,28 @@ export default function DashboardPage() {
       <DashboardStatsCards stats={data.stats} liveViewers={data.live_viewers} />
 
       {/* 2. Primary Analytics Grid (Leaderboard + Timeline + Engagement Gauge) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Popular polls leaderboard */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-4 h-full">
           <LeaderboardWidget polls={data.popular_polls || data.polls} />
         </div>
 
         {/* Voting velocity chart */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-4 h-full">
           {latestActive ? (
             <VotingTimelineChart pollId={latestActive.id} />
           ) : (
-            <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-5 backdrop-blur-sm flex flex-col justify-center items-center text-center h-full min-h-[300px]">
-              <BarChart3 size={32} className="text-slate-600 mb-2" />
+            <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-sm flex flex-col justify-center items-center text-center h-full min-h-[380px]">
+              <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center mb-3">
+                <BarChart3 size={24} />
+              </div>
               <h4 className="text-sm font-semibold text-white">No Active Polling Stream</h4>
-              <p className="text-xs text-slate-500 mt-1 max-w-xs">
+              <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
                 Launch a poll to stream real-time voting velocity curves and minute-by-minute activity.
               </p>
               <button
                 onClick={() => setIsTemplatesOpen(true)}
-                className="btn-primary text-xs mt-4 py-1.5 px-3"
+                className="btn-primary text-xs mt-4 py-2 px-3.5"
               >
                 Launch from Template
               </button>
@@ -277,7 +284,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Overall Engagement Score */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-4 h-full">
           <EngagementScoreGauge
             score={data.stats.avg_engagement || 0}
             totalVotes={data.stats.total_votes || 0}
@@ -287,11 +294,11 @@ export default function DashboardPage() {
       </div>
 
       {/* 3. Deep Telemetry: Device Analytics, Geography, and Real-Time Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 h-full">
           <DeviceAndGeoAnalytics devices={data.devices} geography={data.geography} />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-4 h-full">
           <RecentActivityFeed activities={data.recent_activities || []} />
         </div>
       </div>
@@ -299,36 +306,36 @@ export default function DashboardPage() {
       {/* 4. Poll Management & Performance Table */}
       <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 overflow-hidden backdrop-blur-sm">
         {/* Table Controls */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-5 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-bold text-white">Poll Performance & Lifecycle</h2>
-            <p className="text-xs text-slate-500">
+            <h2 className="text-base font-bold text-white tracking-tight">Poll Performance & Lifecycle</h2>
+            <p className="text-xs text-slate-400 mt-0.5">
               Showing {filteredPolls.length} of {data.polls.length} total polls
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Search input */}
             <div className="relative">
-              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
               <input
                 type="text"
                 placeholder="Search polls..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-950/80 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 w-44 sm:w-52"
+                className="h-9 bg-slate-950/80 border border-slate-800 rounded-lg pl-8 pr-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 w-48 sm:w-56 transition-colors"
               />
             </div>
 
             {/* Status pills */}
-            <div className="flex items-center bg-slate-950/80 p-0.5 rounded-lg border border-slate-800 text-xs">
+            <div className="h-9 flex items-center bg-slate-950/80 p-1 rounded-lg border border-slate-800 text-xs">
               {(['all', 'active', 'closed', 'expired'] as FilterStatus[]).map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`px-2 py-1 rounded capitalize transition-all text-[11px] font-medium ${
+                  className={`h-7 px-2.5 rounded capitalize transition-all text-[11px] font-medium flex items-center ${
                     statusFilter === st
-                      ? 'bg-violet-600 text-white font-semibold'
+                      ? 'bg-violet-600 text-white font-semibold shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -342,7 +349,7 @@ export default function DashboardPage() {
               <select
                 value={sortField}
                 onChange={(e) => setSortField(e.target.value as SortField)}
-                className="bg-slate-950/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-violet-500 appearance-none pr-7 cursor-pointer"
+                className="h-9 bg-slate-950/80 border border-slate-800 rounded-lg pl-3 pr-8 text-xs text-slate-300 focus:outline-none focus:border-violet-500 appearance-none cursor-pointer transition-colors"
               >
                 <option value="recent">Most Recent</option>
                 <option value="votes">Most Votes</option>
@@ -350,8 +357,8 @@ export default function DashboardPage() {
                 <option value="views">Most Views</option>
               </select>
               <ChevronDown
-                size={12}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+                size={13}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
               />
             </div>
           </div>
@@ -386,27 +393,27 @@ export default function DashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-left text-slate-500 uppercase font-semibold tracking-wider border-b border-slate-800 bg-slate-950/30">
-                  <th className="px-5 py-3">Question</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Votes</th>
-                  <th className="px-4 py-3 text-right">Views</th>
-                  <th className="px-4 py-3 text-right">Participation</th>
-                  <th className="px-4 py-3 text-right">Engagement</th>
-                  <th className="px-5 py-3 text-right">Quick Actions</th>
+                <tr className="text-slate-400 uppercase font-semibold tracking-wider border-b border-slate-800 bg-slate-950/40 text-[11px]">
+                  <th className="px-5 py-3.5 text-left min-w-[260px]">Question</th>
+                  <th className="px-4 py-3.5 text-center w-28 whitespace-nowrap">Status</th>
+                  <th className="px-4 py-3.5 text-center w-24 whitespace-nowrap">Votes</th>
+                  <th className="px-4 py-3.5 text-center w-24 whitespace-nowrap">Views</th>
+                  <th className="px-4 py-3.5 text-center w-28 whitespace-nowrap">Participation</th>
+                  <th className="px-4 py-3.5 text-center w-32 whitespace-nowrap">Engagement</th>
+                  <th className="px-5 py-3.5 text-right w-44 whitespace-nowrap">Quick Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
                 {filteredPolls.map((poll) => (
                   <tr
                     key={poll.id}
-                    className="hover:bg-slate-800/30 transition-colors group"
+                    className="h-14 hover:bg-slate-800/30 transition-colors group"
                   >
                     {/* Title & metadata */}
-                    <td className="px-5 py-3.5 max-w-xs">
+                    <td className="px-5 py-3 text-left">
                       <Link
                         to={`/polls/${poll.id}/detail`}
-                        className="font-medium text-white hover:text-violet-300 transition-colors truncate block"
+                        className="font-medium text-white hover:text-violet-300 transition-colors truncate block max-w-sm"
                       >
                         {poll.question}
                       </Link>
@@ -418,36 +425,38 @@ export default function DashboardPage() {
                     </td>
 
                     {/* Status badge */}
-                    <td className="px-4 py-3.5">
-                      <PollStatusBadge status={poll.status} size="sm" />
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      <div className="inline-flex justify-center">
+                        <PollStatusBadge status={poll.status} size="sm" />
+                      </div>
                     </td>
 
                     {/* Votes count */}
-                    <td className="px-4 py-3.5 text-right font-mono font-semibold text-white">
+                    <td className="px-4 py-3 text-center font-mono font-semibold text-white whitespace-nowrap">
                       {poll.votes.toLocaleString()}
                     </td>
 
                     {/* Views count */}
-                    <td className="px-4 py-3.5 text-right font-mono text-slate-400">
+                    <td className="px-4 py-3 text-center font-mono text-slate-400 whitespace-nowrap">
                       {poll.views.toLocaleString()}
                     </td>
 
                     {/* Participation Rate % */}
-                    <td className="px-4 py-3.5 text-right">
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
                       <span className="font-mono font-medium text-slate-300">
                         {poll.participation_rate}%
                       </span>
                     </td>
 
                     {/* Engagement score */}
-                    <td className="px-4 py-3.5 text-right">
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
                       <span
-                        className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded ${
+                        className={`inline-block font-mono text-[11px] font-bold px-2.5 py-0.5 rounded ${
                           poll.engagement_score >= 70
-                            ? 'bg-emerald-500/10 text-emerald-400'
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                             : poll.engagement_score >= 40
-                            ? 'bg-violet-500/10 text-violet-400'
-                            : 'bg-slate-800 text-slate-400'
+                            ? 'bg-violet-500/10 text-violet-400 border border-violet-500/20'
+                            : 'bg-slate-800 text-slate-400 border border-slate-700/50'
                         }`}
                       >
                         {poll.engagement_score}/100
@@ -455,12 +464,12 @@ export default function DashboardPage() {
                     </td>
 
                     {/* Action buttons */}
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="px-5 py-3 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1.5">
                         {/* Duplicate */}
                         <button
                           onClick={() => handleDuplicate(poll.id)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          className="w-7 h-7 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                           title="Clone / Duplicate poll"
                         >
                           <Copy size={13} />
@@ -469,7 +478,7 @@ export default function DashboardPage() {
                         {/* Share */}
                         <button
                           onClick={() => setSharePoll(poll)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          className="w-7 h-7 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                           title="Share Link & QR"
                         >
                           <Share2 size={13} />
@@ -478,7 +487,7 @@ export default function DashboardPage() {
                         {/* Export */}
                         <button
                           onClick={() => setExportPoll(poll)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          className="w-7 h-7 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                           title="Export CSV / Excel / PDF"
                         >
                           <Download size={13} />
@@ -487,7 +496,7 @@ export default function DashboardPage() {
                         {/* Close / Reopen */}
                         <button
                           onClick={() => handleToggleStatus(poll)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          className="w-7 h-7 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                           title={poll.status === 'active' ? 'Close poll' : 'Reopen poll'}
                         >
                           {poll.status === 'active' ? (
@@ -500,7 +509,7 @@ export default function DashboardPage() {
                         {/* View Results Link */}
                         <Link
                           to={`/results/${poll.id}`}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-violet-400 hover:bg-slate-800 transition-colors"
+                          className="w-7 h-7 rounded-lg inline-flex items-center justify-center text-slate-400 hover:text-violet-400 hover:bg-slate-800 transition-colors"
                           title="View Live Results"
                         >
                           <ExternalLink size={13} />
@@ -509,7 +518,7 @@ export default function DashboardPage() {
                         {/* Delete */}
                         <button
                           onClick={() => handleDelete(poll.id)}
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+                          className="w-7 h-7 rounded-lg inline-flex items-center justify-center text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                           title="Delete poll"
                         >
                           <Trash2 size={13} />

@@ -1,4 +1,4 @@
-import { CheckCircle2, PlusCircle, XCircle, Clock, Users, Flame, Sparkles } from 'lucide-react'
+import { CheckCircle2, PlusCircle, XCircle, Clock, Users, Flame, Sparkles, Activity } from 'lucide-react'
 import { ActivityFeedItem } from '../services/api'
 
 interface RecentActivityFeedProps {
@@ -56,51 +56,70 @@ export default function RecentActivityFeed({ activities }: RecentActivityFeedPro
   }
 
   return (
-    <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-5 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <h3 className="font-semibold text-white text-sm">Live Activity Feed</h3>
+    <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-sm h-full min-h-[380px] flex flex-col justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
+              <Activity size={16} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-white text-sm tracking-tight">Live Activity Feed</h3>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <p className="text-xs text-slate-400">Audience event stream</p>
+            </div>
+          </div>
+          <span className="text-xs text-slate-400 font-mono">Real-time sync</span>
         </div>
-        <span className="text-xs text-slate-500 font-mono">Real-time sync</span>
+
+        {activities.length === 0 ? (
+          <div className="flex flex-col justify-center items-center text-center py-12">
+            <p className="text-xs text-slate-400 font-medium">No activity recorded yet.</p>
+            <p className="text-[11px] text-slate-500 mt-1 max-w-[200px]">
+              Votes, voter connects, and events will stream here live.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2.5 max-h-[250px] overflow-y-auto pr-1">
+            {activities.map((item, index) => (
+              <div
+                key={item.id || index}
+                className="flex items-start gap-3 p-3 rounded-lg bg-slate-950/40 border border-slate-800/40 transition-colors hover:border-slate-700/60"
+              >
+                <div
+                  className={`w-7 h-7 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${getBg(
+                    item.type
+                  )}`}
+                >
+                  {getIcon(item.type)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-slate-200 leading-snug truncate">
+                    {item.message || item.poll_title || 'New activity'}
+                  </p>
+                  {item.poll_title && item.message !== item.poll_title && (
+                    <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                      {item.poll_title}
+                    </p>
+                  )}
+                </div>
+                <span className="text-[10px] text-slate-500 shrink-0 mt-0.5 font-mono">
+                  {timeAgo(item.created_at)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {activities.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-xs text-slate-500">No activity recorded yet.</p>
-          <p className="text-[11px] text-slate-600 mt-0.5">Votes and events will appear here live.</p>
-        </div>
-      ) : (
-        <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
-          {activities.map((item, index) => (
-            <div
-              key={item.id || index}
-              className="flex items-start gap-3 p-2.5 rounded-lg bg-slate-950/40 border border-slate-800/40 transition-colors hover:border-slate-700/60"
-            >
-              <div
-                className={`w-7 h-7 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${getBg(
-                  item.type
-                )}`}
-              >
-                {getIcon(item.type)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-200 leading-snug truncate">
-                  {item.message || item.poll_title || 'New activity'}
-                </p>
-                {item.poll_title && item.message !== item.poll_title && (
-                  <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                    {item.poll_title}
-                  </p>
-                )}
-              </div>
-              <span className="text-[10px] text-slate-500 shrink-0 mt-0.5 font-mono">
-                {timeAgo(item.created_at)}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="mt-5 pt-3.5 border-t border-slate-800/50 flex items-center justify-between text-[11px] text-slate-500">
+        <span>Redis event pipe</span>
+        <span className="text-cyan-400 font-medium flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" /> Connected
+        </span>
+      </div>
     </div>
   )
 }
