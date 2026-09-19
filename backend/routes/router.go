@@ -1,8 +1,9 @@
-﻿// Package routes wires together all handlers, middleware, and the Gin engine.
+// Package routes wires together all handlers, middleware, and the Gin engine.
 // Centralising route registration here makes it easy to audit all API endpoints.
 package routes
 
 import (
+	"context"
 	"strings"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/pulsevote/backend/configs"
+	"github.com/pulsevote/backend/internal/activity"
 	"github.com/pulsevote/backend/internal/auth"
 	"github.com/pulsevote/backend/internal/middleware"
 	"github.com/pulsevote/backend/internal/poll"
@@ -29,11 +31,14 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 	authRepo := auth.NewRepository(db)
 	pollRepo := poll.NewRepository(db)
 	voteRepo := vote.NewRepository(db)
+	activityRepo := activity.NewRepository(db)
+	_ = activityRepo.EnsureIndexes(context.Background())
 
 	// --- Services (business logic layer) ---
+	activityService := activity.NewService(activityRepo, redisClient)
 	authService := auth.NewService(authRepo, cfg.JWTSecret)
-	pollService := poll.NewService(pollRepo, redisClient)
-	voteService := vote.NewService(voteRepo, pollRepo, redisClient)
+	pollService := poll.NewService(pollRepo, redisClient, voteRepo, activityService)
+	voteService := vote.NewService(voteRepo, pollRepo, redisClient, activityService)
 
 	// --- Handlers (HTTP layer) ---
 	authHandler := auth.NewHandler(authService)
@@ -63,7 +68,7 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 		},
 		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Disposition"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -96,14 +101,17 @@ func SetupRouter(cfg *configs.Config, mongoClient *mongo.Client, redisClient *go
 	{
 		protected.GET("/polls", pollHandler.ListByCreator)
 		protected.POST("/polls", pollHandler.Create)
+		protected.POST("/polls/:id/duplicate", pollHandler.Duplicate)
+		protected.GET("/polls/:id/export", pollHandler.Export)
 		protected.PATCH("/polls/:id/close", pollHandler.Close)
 		protected.PATCH("/polls/:id/open", pollHandler.Open)
 		protected.DELETE("/polls/:id", pollHandler.Delete)
 		protected.GET("/dashboard", pollHandler.GetDashboardStats)
 	}
 
-	// --- WebSocket endpoint (public - viewers don't need an account) ---
+	// --- WebSocket endpoints ---
 	r.GET("/ws/polls/:id", wsHandler.ServeWS)
+	r.GET("/ws/dashboard", wsHandler.ServeDashboardWS(authService))
 
 	return r
 }

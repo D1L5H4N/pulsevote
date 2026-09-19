@@ -28,6 +28,15 @@ Quorum lets users create polls, share them instantly via link or QR code, and wa
 - 📈 **Live Analytics Dashboard**: Metric cards for total votes, live viewers, turnout rate %, and front-runner
 - ⏳ **Voting Timeline Activity**: Real-time chronological vote velocity area curves
 - ⏱️ **Poll Expiration Countdown**: Live countdown timer with automatic deadline closure and broadcast
+- 🏢 **Enterprise SaaS Dashboard**: Linear and Vercel style overview with 5 responsive metric cards
+- ⚡ **Real-Time Activity Feed**: Live event stream (votes, poll lifecycle, participant connections)
+- 🏆 **Most Popular Polls Leaderboard**: Real-time rankings sortable by votes, engagement score, or views
+- 📱 **Device & Geographic Telemetry**: Client breakdown (mobile, desktop, tablet) and privacy-safe country distribution
+- 💯 **0 to 100 Engagement Scoring**: Multi-factor interaction index with radial meter
+- 📋 **SaaS Poll Templates**: 5 one-click blueprints (Classroom Quiz, Team Meeting, Product Feedback, Event Planning, Customer Survey)
+- 📑 **Export Data Suite**: Export results to CSV, Excel-ready CSV, and clean printable PDF
+- 🔍 **Search & Multi-Status Filtering**: Instant client-side search, pills (Active, Closed, Expired), and multi-criteria sorting
+- 📋 **Duplicate / Clone Poll**: One-click duplication to re-run polls
 - 🔐 **Authentication**: JWT-based login/register system
 - 🗂️ **My Polls Dashboard**: Manage, close, reopen, and delete your polls
 - 📋 **Poll Detail View**: Full stats, management controls, and timeline analytics
@@ -153,7 +162,16 @@ quorum/
 │   │   │   ├── QRCodeModal.tsx            # Full-screen QR modal: copy, share, PNG download
 │   │   │   ├── PollCard.tsx              # Reusable poll card for dashboard/my-polls
 │   │   │   ├── PollStatusControl.tsx     # Status toggle (Active, Closed, Reopen modal)
+│   │   │   ├── PollStatusBadges.tsx      # Unified status badge (Active, Scheduled, Closed, Expired)
 │   │   │   ├── ParticipantCounter.tsx    # Real-time Redis presence indicator
+│   │   │   ├── DashboardStatsCards.tsx   # 5-metric SaaS summary cards
+│   │   │   ├── RecentActivityFeed.tsx    # Live WebSocket activity stream
+│   │   │   ├── LeaderboardWidget.tsx     # Popular polls rankings by votes, views, engagement
+│   │   │   ├── DeviceAndGeoAnalytics.tsx # Device (mobile/desktop/tablet) & country insights
+│   │   │   ├── EngagementScoreGauge.tsx  # 0 to 100 circular score meter
+│   │   │   ├── QuickActionsPanel.tsx     # Top action bar with quick templates & actions
+│   │   │   ├── PollTemplatesModal.tsx    # 5 one-click enterprise blueprints
+│   │   │   ├── ExportModal.tsx           # CSV, Excel, and printable PDF export
 │   │   │   ├── LiveAnalyticsCards.tsx    # 4-card metric dashboard
 │   │   │   ├── VotingTimelineChart.tsx   # Velocity & cumulative timeline area chart
 │   │   │   ├── ResultsChart.tsx          # Recharts multi-view chart for live results
@@ -254,12 +272,15 @@ quorum/
 | `GET`    | `/api/polls/:id/results`    | No    | Get current vote counts + percentages |
 | `GET`    | `/api/polls`                | JWT   | List the authenticated user's polls   |
 | `POST`   | `/api/polls`                | JWT   | Create a new poll                     |
+| `POST`   | `/api/polls/:id/duplicate`  | JWT   | Clone poll with fresh state           |
+| `GET`    | `/api/polls/:id/export`     | JWT   | Export poll dataset (CSV/Excel)       |
 | `PATCH`  | `/api/polls/:id/close`      | JWT   | Close a poll (owner only)             |
 | `PATCH`  | `/api/polls/:id/open`       | JWT   | Reopen or open a poll (owner only)    |
 | `DELETE` | `/api/polls/:id`            | JWT   | Delete a poll (owner only)            |
 | `GET`    | `/api/polls/:id/timeline`   | No    | Chronological voting velocity dataset |
-| `GET`    | `/api/dashboard`            | JWT   | Dashboard stats (totals, active count)|
+| `GET`    | `/api/dashboard`            | JWT   | Full SaaS dashboard metrics & feed    |
 | `GET`    | `/ws/polls/:id`             | No    | WebSocket upgrade for live results    |
+| `GET`    | `/ws/dashboard`            | JWT   | WebSocket upgrade for live activities |
 | `GET`    | `/health`                   | No    | Health check                          |
 
 ---
@@ -545,6 +566,17 @@ Vite automatically proxies `/api/*` → `http://localhost:8080` and `/ws/*` → 
 | Live analytics dashboard cards  | ✅     |
 | Voting timeline activity chart  | ✅     |
 | Poll expiration countdown timer | ✅     |
+| 5 SaaS dashboard metric cards   | ✅     |
+| Real-time activity event feed   | ✅     |
+| Popular polls leaderboard       | ✅     |
+| Device breakdown analytics      | ✅     |
+| Privacy-safe geographic insights| ✅     |
+| 0 to 100 engagement score meter | ✅     |
+| Quick actions panel             | ✅     |
+| SaaS poll blueprints/templates  | ✅     |
+| Clone / duplicate poll feature  | ✅     |
+| Search & multi-status filtering | ✅     |
+| CSV, Excel, and PDF export      | ✅     |
 | Deployed to Vercel + Render     | ✅     |
 | GitHub auto-deploy (push→live)  | ✅     |
 

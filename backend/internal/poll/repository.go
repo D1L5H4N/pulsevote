@@ -113,3 +113,37 @@ func (r *Repository) CountByCreator(ctx context.Context, creatorID primitive.Obj
 	}
 	return r.collection.CountDocuments(ctx, filter)
 }
+
+// IncrementViews increments the view counter for a poll in MongoDB.
+func (r *Repository) IncrementViews(ctx context.Context, id primitive.ObjectID) error {
+	_, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{"_id": id},
+		bson.M{"$inc": bson.M{"views": 1}},
+	)
+	return err
+}
+
+// Duplicate clones an existing poll with a fresh ID, resetting status to active.
+func (r *Repository) Duplicate(ctx context.Context, sourceID primitive.ObjectID, creatorID primitive.ObjectID) (*Poll, error) {
+	src, err := r.FindByID(ctx, sourceID)
+	if err != nil {
+		return nil, err
+	}
+
+	clone := &Poll{
+		ID:        primitive.NewObjectID(),
+		CreatorID: creatorID,
+		Question:  src.Question + " (Copy)",
+		Options:   append([]string(nil), src.Options...),
+		Status:    StatusActive,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Views:     0,
+	}
+
+	if _, err := r.collection.InsertOne(ctx, clone); err != nil {
+		return nil, err
+	}
+	return clone, nil
+}

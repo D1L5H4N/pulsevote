@@ -6,11 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	goredis "github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
+	"github.com/pulsevote/backend/internal/activity"
 	"github.com/pulsevote/backend/internal/poll"
 	redisutil "github.com/pulsevote/backend/internal/redis"
 )
@@ -23,20 +25,16 @@ var (
 )
 
 // Service orchestrates vote submission and result computation.
-//
-// Dependency structure:
-//   - voteRepo: persist votes, check duplicates
-//   - pollRepo:  fetch poll data (injected directly to avoid import cycles with poll.Service)
-//   - redis:     counters (INCR/MGET) and Pub/Sub publishing
 type Service struct {
 	voteRepo *Repository
 	pollRepo *poll.Repository
 	redis    *goredis.Client
+	activity *activity.Service
 }
 
 // NewService constructs a vote Service.
-func NewService(voteRepo *Repository, pollRepo *poll.Repository, redis *goredis.Client) *Service {
-	return &Service{voteRepo: voteRepo, pollRepo: pollRepo, redis: redis}
+func NewService(voteRepo *Repository, pollRepo *poll.Repository, redis *goredis.Client, act *activity.Service) *Service {
+	return &Service{voteRepo: voteRepo, pollRepo: pollRepo, redis: redis, activity: act}
 }
 
 // Vote processes a single vote submission end-to-end:
@@ -52,7 +50,7 @@ func (s *Service) Vote(
 	ctx context.Context,
 	pollID string,
 	optionIndex int,
-	clientIP, userAgent string,
+	clientIP, userAgent, country string,
 ) (*poll.ResultsResponse, error) {
 	// 1. Load poll
 	oid, err := primitive.ObjectIDFromHex(pollID)
@@ -88,10 +86,17 @@ func (s *Service) Vote(
 	}
 
 	// 5. Persist vote to MongoDB (source of truth)
+	if country == "" {
+		country = "Global"
+	}
+	device := parseDevice(userAgent)
+
 	v := &Vote{
 		PollID:           oid,
 		OptionIndex:      optionIndex,
 		VoterFingerprint: fingerprint,
+		Device:           device,
+		Country:          country,
 	}
 	if err := s.voteRepo.Create(ctx, v); err != nil {
 		// Handle race condition: concurrent duplicate vote (unique index violation)
@@ -99,6 +104,11 @@ func (s *Service) Vote(
 			return nil, ErrAlreadyVoted
 		}
 		return nil, err
+	}
+
+	// Record activity for dashboard stream
+	if s.activity != nil {
+		s.activity.RecordActivity(ctx, p.CreatorID, p.ID, p.Question, "vote", fmt.Sprintf("New vote cast for \"%s\"", p.Options[optionIndex]))
 	}
 
 	// 6. Increment Redis counter (best-effort; results still computed correctly)
@@ -270,4 +280,16 @@ func allZero(counts []int64) bool {
 // roundToTwo rounds a float64 to two decimal places.
 func roundToTwo(v float64) float64 {
 	return float64(int(v*100+0.5)) / 100
+}
+
+// parseDevice determines whether the client is mobile, tablet, or desktop.
+func parseDevice(userAgent string) string {
+	ua := strings.ToLower(userAgent)
+	if strings.Contains(ua, "ipad") || strings.Contains(ua, "tablet") || strings.Contains(ua, "kindle") || strings.Contains(ua, "playbook") {
+		return "tablet"
+	}
+	if strings.Contains(ua, "mobile") || strings.Contains(ua, "android") || strings.Contains(ua, "iphone") || strings.Contains(ua, "ipod") {
+		return "mobile"
+	}
+	return "desktop"
 }

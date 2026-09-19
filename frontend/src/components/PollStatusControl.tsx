@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { PlayCircle, StopCircle, RotateCcw, Clock, AlertCircle, X, Check } from 'lucide-react'
-import { pollApi } from '../services/api'
+import { pollApi, PollStatus } from '../services/api'
 
 interface Props {
   pollId: string
-  status: 'active' | 'closed' | 'expired'
+  status: PollStatus
   expiresAt?: string
-  onStatusChange?: (newStatus: 'active' | 'closed' | 'expired', newExpiresAt?: string | null) => void
+  onStatusChange?: (newStatus: PollStatus, newExpiresAt?: string | null) => void
   className?: string
 }
 

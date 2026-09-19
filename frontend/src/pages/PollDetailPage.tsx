@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Share2, Trash2, QrCode, ExternalLink, Clock } from 'lucide-react'
-import { pollApi, voteApi, Poll, ResultsResponse } from '../services/api'
+import { pollApi, voteApi, Poll, ResultsResponse, PollStatus } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import ResultsChart from '../components/ResultsChart'
 import QRCodeModal from '../components/QRCodeModal'
@@ -88,7 +88,7 @@ export default function PollDetailPage() {
     }
   }
 
-  const handleStatusChange = (newStatus: 'active' | 'closed' | 'expired', newExpiry?: string | null) => {
+  const handleStatusChange = (newStatus: PollStatus, newExpiry?: string | null) => {
     setPoll((p) => p ? {
       ...p,
       status: newStatus,

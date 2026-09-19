@@ -2,32 +2,39 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { ResultsResponse } from '../services/api'
 
 interface UseWebSocketOptions {
-  pollId: string
+  pollId?: string
+  endpoint?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onMessage: (data: any) => void
   enabled?: boolean
 }
 
-function getWsUrl(pollId: string): string {
+function getWsUrl(pollId?: string, endpoint?: string): string {
+  const token = localStorage.getItem('pulsevote_token') || ''
+  let path = endpoint || `/ws/polls/${pollId}`
+  if (endpoint && token) {
+    path = `${endpoint}?token=${encodeURIComponent(token)}`
+  }
+
   // 1. Explicit WS URL (e.g. from .env.production)
   if (import.meta.env.VITE_WS_URL) {
     const base = import.meta.env.VITE_WS_URL.replace(/\/$/, '')
-    return `${base}/ws/polls/${pollId}`
+    return `${base}${path}`
   }
 
   // 2. Derive from API URL if set
   if (import.meta.env.VITE_API_URL) {
     const wsBase = import.meta.env.VITE_API_URL.replace(/^http/, 'ws').replace(/\/$/, '')
-    return `${wsBase}/ws/polls/${pollId}`
+    return `${wsBase}${path}`
   }
 
   // 3. Fallback to same host with ws/wss protocol (local development with Vite proxy)
   if (typeof window !== 'undefined') {
     const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    return `${proto}//${window.location.host}/ws/polls/${pollId}`
+    return `${proto}//${window.location.host}${path}`
   }
 
-  return `/ws/polls/${pollId}`
+  return path
 }
 
 /**
@@ -41,7 +48,7 @@ function getWsUrl(pollId: string): string {
  *   - Sends pong responses to server ping frames (handled by the browser WS API)
  *   - Cleans up on component unmount
  */
-export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocketOptions) {
+export function useWebSocket({ pollId, endpoint, onMessage, enabled = true }: UseWebSocketOptions) {
   const [isConnected, setIsConnected] = useState(false)
   const wsRef         = useRef<WebSocket | null>(null)
   const reconnectRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -54,9 +61,9 @@ export function useWebSocket({ pollId, onMessage, enabled = true }: UseWebSocket
   useEffect(() => { enabledRef.current = enabled }, [enabled])
 
   const connect = useCallback(() => {
-    if (!enabledRef.current || !pollId) return
+    if (!enabledRef.current || (!pollId && !endpoint)) return
 
-    const url = getWsUrl(pollId)
+    const url = getWsUrl(pollId, endpoint)
     const ws  = new WebSocket(url)
     wsRef.current = ws
 

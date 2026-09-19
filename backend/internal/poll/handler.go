@@ -1,7 +1,8 @@
-﻿package poll
+package poll
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,6 @@ func (h *Handler) Create(c *gin.Context) {
 
 	// CreatorID comes from the JWT middleware - never from the request body
 	creatorID := c.GetString("userID")
-
 	p, err := h.service.Create(c.Request.Context(), creatorID, &req)
 	if err != nil {
 		switch {
@@ -44,7 +44,8 @@ func (h *Handler) Create(c *gin.Context) {
 
 // GetByID handles GET /api/polls/:id  (public)
 func (h *Handler) GetByID(c *gin.Context) {
-	p, err := h.service.GetByID(c.Request.Context(), c.Param("id"))
+	pollID := c.Param("id")
+	p, err := h.service.GetByID(c.Request.Context(), pollID)
 	if err != nil {
 		if errors.Is(err, ErrPollNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -53,6 +54,9 @@ func (h *Handler) GetByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch poll"})
 		return
 	}
+	// Record view asynchronously
+	h.service.IncrementViews(c.Request.Context(), pollID)
+
 	c.JSON(http.StatusOK, ToPollResponse(p))
 }
 
@@ -137,4 +141,50 @@ func (h *Handler) GetDashboardStats(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, stats)
+}
+
+// Duplicate handles POST /api/polls/:id/duplicate (authenticated, owner only)
+func (h *Handler) Duplicate(c *gin.Context) {
+	userID := c.GetString("userID")
+	p, err := h.service.Duplicate(c.Request.Context(), c.Param("id"), userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, ErrPollNotFound):
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		case errors.Is(err, ErrNotOwner):
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to duplicate poll"})
+		}
+		return
+	}
+	c.JSON(http.StatusCreated, ToPollResponse(p))
+}
+
+// Export handles GET /api/polls/:id/export (authenticated, owner only)
+func (h *Handler) Export(c *gin.Context) {
+	userID := c.GetString("userID")
+	pollID := c.Param("id")
+	format := c.DefaultQuery("format", "csv")
+
+	if format == "csv" || format == "excel" {
+		csvContent, err := h.service.ExportCSV(c.Request.Context(), pollID, userID)
+		if err != nil {
+			switch {
+			case errors.Is(err, ErrPollNotFound):
+				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			case errors.Is(err, ErrNotOwner):
+				c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			default:
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to export poll data"})
+			}
+			return
+		}
+		filename := fmt.Sprintf("poll_%s_export.csv", pollID)
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+		c.Data(http.StatusOK, "text/csv; charset=utf-8", []byte(csvContent))
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported format, use csv or excel"})
 }

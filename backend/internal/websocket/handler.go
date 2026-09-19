@@ -1,10 +1,13 @@
-﻿package websocket
+package websocket
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+
+	"github.com/pulsevote/backend/internal/auth"
 )
 
 // upgrader configures the WebSocket upgrade parameters.
@@ -64,4 +67,48 @@ func (h *Handler) ServeWS(c *gin.Context) {
 	// The goroutines manage their own cleanup via deferred hub.Unregister.
 	go client.writePump()
 	go client.readPump()
+}
+
+// ServeDashboardWS handles GET /ws/dashboard for authenticated real-time dashboard events.
+func (h *Handler) ServeDashboardWS(authService *auth.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenStr := c.Query("token")
+		if tokenStr == "" {
+			tokenStr = c.GetHeader("Authorization")
+			if strings.HasPrefix(tokenStr, "Bearer ") {
+				tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
+			}
+		}
+
+		var userID string
+		if authService != nil && tokenStr != "" {
+			claims, err := authService.ValidateToken(tokenStr)
+			if err == nil {
+				userID = claims.UserID
+			}
+		}
+
+		if userID == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
+
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			return
+		}
+
+		roomID := "dashboard:" + userID
+		client := &Client{
+			conn:   conn,
+			send:   make(chan []byte, 256),
+			pollID: roomID,
+			hub:    h.hub,
+		}
+
+		h.hub.Register(client)
+
+		go client.writePump()
+		go client.readPump()
+	}
 }

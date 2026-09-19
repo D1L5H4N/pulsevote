@@ -41,8 +41,15 @@ func (h *Handler) Vote(c *gin.Context) {
 		clientIP = c.ClientIP()
 	}
 	userAgent := c.GetHeader("User-Agent")
+	country := c.GetHeader("CF-IPCountry")
+	if country == "" {
+		country = c.GetHeader("X-Country-Code")
+	}
+	if country == "" {
+		country = c.GetHeader("CloudFront-Viewer-Country")
+	}
 
-	results, err := h.service.Vote(c.Request.Context(), pollID, req.OptionIndex, clientIP, userAgent)
+	results, err := h.service.Vote(c.Request.Context(), pollID, req.OptionIndex, clientIP, userAgent, country)
 	if err != nil {
 		switch {
 		case errors.Is(err, poll.ErrPollNotFound):

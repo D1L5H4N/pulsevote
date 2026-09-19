@@ -43,10 +43,11 @@ export default function PollCard({ poll, onRefresh }: Props) {
   }
 
   const statusConfig = {
-    active:  { dot: 'bg-emerald-400', label: 'Active',  cls: 'badge-active'  },
-    closed:  { dot: 'bg-slate-500',   label: 'Closed',  cls: 'badge-closed'  },
-    expired: { dot: 'bg-amber-400',   label: 'Expired', cls: 'badge-expired' },
-  }[poll.status]
+    active:    { dot: 'bg-emerald-400', label: 'Active',    cls: 'badge-active'  },
+    scheduled: { dot: 'bg-sky-400',     label: 'Scheduled', cls: 'badge-active'  },
+    closed:    { dot: 'bg-slate-500',   label: 'Closed',    cls: 'badge-closed'  },
+    expired:   { dot: 'bg-amber-400',   label: 'Expired',   cls: 'badge-expired' },
+  }[poll.status] || { dot: 'bg-slate-500', label: poll.status, cls: 'badge-closed' }
 
   return (
     <>

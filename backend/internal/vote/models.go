@@ -1,4 +1,4 @@
-﻿// Package vote handles vote submission, duplicate prevention, Redis counters,
+// Package vote handles vote submission, duplicate prevention, Redis counters,
 // real-time result computation, and Pub/Sub publishing.
 package vote
 
@@ -19,6 +19,8 @@ type Vote struct {
 	PollID           primitive.ObjectID `bson:"poll_id"       json:"poll_id"`
 	OptionIndex      int                `bson:"option_index"  json:"option_index"`
 	VoterFingerprint string             `bson:"voter_fingerprint" json:"-"` // never exposed
+	Device           string             `bson:"device,omitempty"  json:"device,omitempty"`
+	Country          string             `bson:"country,omitempty" json:"country,omitempty"`
 	CreatedAt        time.Time          `bson:"created_at"    json:"created_at"`
 }
 

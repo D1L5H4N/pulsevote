@@ -32,12 +32,16 @@ export interface AuthResponse {
   user: User
 }
 
+export type PollStatus = 'active' | 'closed' | 'expired' | 'scheduled'
+
 export interface Poll {
   id: string
   creator_id: string
   question: string
   options: string[]
-  status: 'active' | 'closed' | 'expired'
+  status: PollStatus
+  views?: number
+  starts_at?: string
   expires_at?: string
   created_at: string
 }
@@ -53,7 +57,7 @@ export interface ResultsResponse {
   type?: string
   poll_id: string
   question: string
-  status: 'active' | 'closed' | 'expired'
+  status: PollStatus
   results: OptionResult[]
   total_votes: number
   expires_at?: string
@@ -73,6 +77,64 @@ export interface DashboardStats {
   active: number
   closed: number
   expired: number
+  scheduled?: number
+  total_polls: number
+  active_polls: number
+  closed_polls: number
+  total_votes: number
+  total_participants: number
+  total_views: number
+  avg_engagement: number
+}
+
+export interface PollAnalyticsItem {
+  id: string
+  question: string
+  options: string[]
+  status: PollStatus
+  created_at: string
+  expires_at?: string
+  votes: number
+  views: number
+  participants: number
+  participation_rate: number
+  engagement_score: number
+}
+
+export interface DeviceBreakdown {
+  mobile: number
+  desktop: number
+  tablet: number
+  mobile_pct: number
+  desktop_pct: number
+  tablet_pct: number
+}
+
+export interface GeoItem {
+  country: string
+  votes: number
+  percentage: number
+}
+
+export interface ActivityFeedItem {
+  id: string
+  user_id: string
+  poll_id: string
+  poll_title: string
+  type: 'vote' | 'create' | 'close' | 'reopen' | 'expire' | 'join'
+  message: string
+  created_at: string
+}
+
+export interface DashboardResponse {
+  stats: DashboardStats
+  polls: PollAnalyticsItem[]
+  popular_polls: PollAnalyticsItem[]
+  devices: DeviceBreakdown
+  geography: GeoItem[]
+  timeline: TimelinePoint[]
+  recent_activities: ActivityFeedItem[]
+  live_viewers: number
 }
 
 export interface CreatePollPayload {
@@ -107,11 +169,17 @@ export const pollApi = {
   open: (id: string, expires_at?: string | null) =>
     api.patch(`/api/polls/${id}/open`, expires_at !== undefined ? { expires_at } : {}),
 
+  duplicate: (id: string) =>
+    api.post<Poll>(`/api/polls/${id}/duplicate`),
+
+  export: (id: string, format = 'csv') =>
+    api.get(`/api/polls/${id}/export?format=${format}`, { responseType: 'blob' }),
+
   delete: (id: string) =>
     api.delete(`/api/polls/${id}`),
 
   getDashboard: () =>
-    api.get<DashboardStats>('/api/dashboard'),
+    api.get<DashboardResponse>('/api/dashboard'),
 }
 
 // === Vote API ===
